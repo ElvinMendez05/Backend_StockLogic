@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+ 
 //Prueba en conexion a la base de datos
 app.get("/db-test", async (req, res) => {
   try {
@@ -43,7 +43,6 @@ app.get("/", (req, res) => {
     message: "API funcionando correctamente"
   });
 });
-
 
 export default app; 
 
