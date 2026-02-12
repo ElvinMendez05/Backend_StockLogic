@@ -30,9 +30,6 @@ const validarJWT = ( req, res = response, next ) => {
             msg: 'Token no válido'
         });
     }
-
-
-
     next();
 }
 
