@@ -4,7 +4,8 @@ import {
     RegisterCompany,
     ForgotPassword,
     ResetPassword,
-    ActivateUser
+    ActivateUser,
+    CheckStatus
 } from '../controllers/authController.js'
 import {
     validateLogin,
@@ -14,6 +15,7 @@ import {
     validateActivateUser
 } from "./validations/authValidations.js"
 import { handleValidationErrors } from "../middlewares/handleValidations.js"
+import isAuth from '../middlewares/isAuth.js'
 import { body } from "express-validator";
 
 const router = express.Router();
@@ -181,5 +183,23 @@ router.post('/auth/reset-password', validateResetPassword, handleValidationError
  *          description: Invalid request
  */
 router.post("/auth/activate-user", validateActivateUser, handleValidationErrors(), ActivateUser);
+
+/**
+ * 
+ * @swagger
+ * /api/auth/check-status:
+ *   get:
+ *      summary: Recover user data from token
+ *      description: Recover user  data from his token
+ *      tags: [User]
+ *      security:
+ *       - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
+ *      responses:
+ *       200:
+ *         description: User token data fetched successfully
+ *       401:
+ *         description: Not authenticated or invalid token
+ */
+router.get("/auth/check-status", isAuth, CheckStatus);
 
 export default router;

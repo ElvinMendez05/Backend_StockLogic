@@ -16,7 +16,7 @@ import jwt from 'jsonwebtoken'
         const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
 
         if(!token ) {
-            const error = new error("Not authenticated.");
+            const error = new Error("Not authenticated.");
             error.statusCode = 401;
             throw error;
         }
@@ -32,14 +32,15 @@ import jwt from 'jsonwebtoken'
         req.user = {
             id: payload.sub,
             email: payload.email,
-            usernName: payload.userName,
+            userName: payload.userName,
             companyId: payload.companyId,
             roleId: payload.roleId
         }
 
         next();
 
-    }catch{
+    }catch(err){
+        const error = new Error(err)
         error.statusCode = error.name == "TokenExpiredError" ? 401: (error.statusCode || 500);
         return next(error);
     }
