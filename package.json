@@ -1,17 +1,25 @@
 {
   "name": "stocklogic_backend",
   "version": "1.0.0",
-   "type": "module",
+  "type": "module",
   "main": "app.js",
   "dependencies": {
+    "3": "^2.1.0",
+    "@sequelize/mssql": "^7.0.0-alpha.48",
     "bcrypt": "^6.0.0",
+    "body-parse": "^0.1.0",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.2.0",
     "node": "^25.5.0",
     "node-bin-setup": "^1.1.4",
+    "nodemailer": "^8.0.1",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
@@ -24,6 +32,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.5"
   }
 }

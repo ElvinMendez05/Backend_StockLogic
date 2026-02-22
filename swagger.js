@@ -1,6 +1,10 @@
 import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express"
+import path from 'path';
+import {projectRoot} from "./helpers/Path.js"
+import { secureHeapUsed } from "crypto";
 
-const options = {
+const swaggerDefinition = {
   definition: {
     openapi: "3.0.0",
     info: {
@@ -10,13 +14,25 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: process.env.APP_URL || "http://localhost:3000",
       },
     ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
   },
-  apis: ["./app.js"],
+  apis: [ path.join(projectRoot, "./app.js"), path.join(projectRoot, "./routes/*.js")],
 };
 
-const swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJSDoc(swaggerDefinition);
 
-export default swaggerSpec;
+export function setupSwagger(app){
+  app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+}
+
