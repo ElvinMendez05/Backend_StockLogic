@@ -325,7 +325,8 @@ export async function ResetPassword(req, res, next) {
 export async function CheckStatus(req, res, next){
     try{
         res.status(200).json({ message: "Current logged user data sent.",
-            user: req.user
+            user: req.user,
+            token: req.token
         })
     }catch(err){
         if (!err.statusCode) {

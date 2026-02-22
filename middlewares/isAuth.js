@@ -37,6 +37,8 @@ import jwt from 'jsonwebtoken'
             roleId: payload.roleId
         }
 
+        req.token = token;
+
         next();
 
     }catch(err){
