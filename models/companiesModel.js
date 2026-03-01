@@ -4,8 +4,8 @@ import { DataTypes } from 'sequelize'
 
 const Companies = connection.define('Companies', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false
     },
