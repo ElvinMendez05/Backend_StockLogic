@@ -21,7 +21,7 @@ export async function Login(req, res, next) {
     const { userPassword } = req.body;
 
     const userEmail = req.body.userEmail.toLowerCase();
-    
+
     let transaction
 
     try {
@@ -32,7 +32,7 @@ export async function Login(req, res, next) {
             error.data = { email: userEmail };
             throw error;
         }
-        
+
 
 
         if (!user.isActive) {
@@ -40,15 +40,15 @@ export async function Login(req, res, next) {
 
                 transaction = await Sequelize.transaction();
                 masterRoleResult = await context.RolesModel.findOne({ where: { name: "SUPER_ADMIN" } }, transaction)
-    
+
                 userResult = await context.UsersModel.destroy({ where: { email: user.email } }, transaction);
-    
+
                 if (user.roleId == masterRoleResult.id) {
                     await context.CompaniesModel.destroy({ where: { id: user.companyId } }, transaction);
                 }
-    
+
                 await transaction.commit();
-                res.status(201).json({ message: "Activation token exipired, please register again."});
+                res.status(201).json({ message: "Activation token exipired, please register again." });
 
             } else {
                 const error = new Error("User account is not active.");
@@ -67,8 +67,25 @@ export async function Login(req, res, next) {
             throw error;
         }
 
-        const token = signJwt({ sub: user.id, email: user.email, userName: user.name, companyId: user.companyId, roleId: user.roleId });
-        res.status(200).json({ message: "Login successful", data: token })
+        const token = signJwt({
+            sub: user.id,
+            email: user.email,
+            userName: user.name,
+            companyId: user.companyId,
+            roleId: user.roleId
+        });
+        
+        res.status(200).json({
+            message: "Login successful",
+            data: token,
+            user: {
+                id: user.id,
+                email: user.email,
+                userName: user.name,
+                companyId: user.companyId,
+                roleId: user.roleId
+            }
+        })
 
     } catch (err) {
         if (transaction) await transaction.rollback();
@@ -175,7 +192,7 @@ export async function ActivateUser(req, res, next) {
         throw error;
     }
 
-    let transaction 
+    let transaction
 
     try {
         const user = await context.UsersModel.findOne({
@@ -204,7 +221,7 @@ export async function ActivateUser(req, res, next) {
             }
 
             await transaction.commit()
-            res.status(201).json({ message: "Activation token exipired, please register again."})
+            res.status(201).json({ message: "Activation token exipired, please register again." })
         }
 
         user.isActive = true;
@@ -322,13 +339,14 @@ export async function ResetPassword(req, res, next) {
     }
 }
 
-export async function CheckStatus(req, res, next){
-    try{
-        res.status(200).json({ message: "Current logged user data sent.",
+export async function CheckStatus(req, res, next) {
+    try {
+        res.status(200).json({
+            message: "Current logged user data sent.",
             user: req.user,
             token: req.token
         })
-    }catch(err){
+    } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
