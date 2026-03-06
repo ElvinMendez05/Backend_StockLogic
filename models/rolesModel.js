@@ -15,6 +15,11 @@ const Roles = connection.define('Roles', {
     description: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    code: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        unique: true
     }
 },
 {

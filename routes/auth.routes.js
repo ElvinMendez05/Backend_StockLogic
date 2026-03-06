@@ -16,6 +16,7 @@ import {
 } from "./validations/authValidations.js"
 import { handleValidationErrors } from "../middlewares/handleValidations.js"
 import isAuth from '../middlewares/isAuth.js'
+import { isRoleAllowed } from '../middlewares/isRoleAllowed.js'
 import { body } from "express-validator";
 
 const router = express.Router();
@@ -200,6 +201,6 @@ router.post("/auth/activate-user", validateActivateUser, handleValidationErrors(
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.get("/auth/check-status", isAuth, CheckStatus);
+router.get("/auth/check-status", isAuth, isRoleAllowed("ALL_ROLES"), CheckStatus);
 
 export default router;

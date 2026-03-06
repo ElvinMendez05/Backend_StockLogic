@@ -39,7 +39,13 @@ export async function Login(req, res, next) {
             if (user.activateTokenExpiration <= Date.now()) {
 
                 transaction = await Sequelize.transaction();
-                masterRoleResult = await context.RolesModel.findOne({ where: { name: "SUPER_ADMIN" } }, transaction)
+                masterRoleResult = await context.RolesModel.findOne({ where: { code: "SUPER_ADMIN" } }, transaction);
+
+                if(!masterRoleResult){
+                    const error = new Error("No main admin role found to proceed.");
+                    error.statusCode = 401;
+                    error.data = { email: userEmail };                   
+                }
 
                 userResult = await context.UsersModel.destroy({ where: { email: user.email } }, transaction);
 
@@ -59,7 +65,7 @@ export async function Login(req, res, next) {
         }
 
 
-        const isPasswordValid = await bcrypt.compare(userPassword, user.password)
+        const isPasswordValid = await bcrypt.compare(userPassword, user.password);
         if (!isPasswordValid) {
             const error = new Error("Invalid password.");
             error.statusCode = 401;
@@ -67,23 +73,30 @@ export async function Login(req, res, next) {
             throw error;
         }
 
+        const roleResult = await context.RolesModel.findOne({ where: { id: user.roleId } });
+        if(!roleResult){
+            const error = new Error("No role found to proceed.");
+            error.statusCode = 401;
+            error.data = { email: userEmail };                   
+        }
+
         const token = signJwt({
             sub: user.id,
             email: user.email,
             userName: user.name,
             companyId: user.companyId,
-            roleId: user.roleId
+            roleCode: roleResult.code
         });
         
         res.status(200).json({
             message: "Login successful",
-            data: token,
+            token,
             user: {
                 id: user.id,
                 email: user.email,
                 userName: user.name,
                 companyId: user.companyId,
-                roleId: user.roleId
+                roleCode: roleResult.code
             }
         })
 
