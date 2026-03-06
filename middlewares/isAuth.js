@@ -34,7 +34,7 @@ import jwt from 'jsonwebtoken'
             email: payload.email,
             userName: payload.userName,
             companyId: payload.companyId,
-            roleId: payload.roleId
+            roleCode: payload.roleCode
         }
 
         req.token = token;

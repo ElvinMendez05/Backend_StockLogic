@@ -3,8 +3,8 @@ import { DataTypes } from 'sequelize'
 
 const Users = connection.define('Users', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false
     },
@@ -42,7 +42,7 @@ const Users = connection.define('Users', {
         allowNull: true,
     },
     companyId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         References: {
             model: "Companies",
@@ -52,7 +52,7 @@ const Users = connection.define('Users', {
         onUpdate: "CASCADE"
     },
     roleId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
         References: {
             model: "Roles",

@@ -3,8 +3,8 @@ import { DataTypes } from 'sequelize'
 
 const Roles = connection.define('Roles', {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
         allowNull: false
     },
@@ -15,6 +15,11 @@ const Roles = connection.define('Roles', {
     description: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    code: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        unique: true
     }
 },
 {
