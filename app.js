@@ -4,9 +4,12 @@ import './config/loadEnv.js';
 import express from "express";
 import cors from "cors";
 import { setupSwagger } from "./swagger.js";
+import { v4 as guidV4} from 'uuid';
 
 //Route importations
 import authRoutes from "./routes/auth.routes.js"
+import categoriesRoutes from "./routes/categories.routes.js"
+import productsRoutes from "./routes/products.routes.js"
 
 const app = express();
 
@@ -17,6 +20,31 @@ app.use(express.urlencoded({ extended: true }));
 //Set up swagger
 setupSwagger(app);
 
+//Set up image uploads
+const onlyImageFilter = (req, file, cb) => {
+  if (file.mimetype == "image/png" || file.mimetype == "image/jpeg" || file.mimetype == "image/jpg") {
+    cb(null, true);
+  } else {
+    cb(new Error())
+  }
+}
+
+//Set up multer for file uploads
+const imageStorageForProductsImages = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(
+      null,
+      path.join(projectRoot, "public", "uploads", "images", "products")
+    );
+  },
+  filename: (req, file, cb) => {
+    const fileName = `${guidV4()}-${file.originalName}`
+    cb(null, fileName)
+  }
+})
+
+app.use(multer({ storage: imageStorageForProductsImages, fileFilter: onlyImageFilter }).single("productImage"))
+
 //Set up api headers
 app.use(cors({
   origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : ["*"],
@@ -26,10 +54,12 @@ app.use(cors({
 
 //Routes
 app.use("/api", authRoutes);
+app.use("/api", categoriesRoutes);
+app.use("/api", productsRoutes);
 
 //Error handling middlewares
 app.use((error, req, res, next) => {
-  if(!error){
+  if (!error) {
     return next();
   }
   const statusCode = error.statusCode || 500;
@@ -52,7 +82,7 @@ app.use((req, res) => {
 
 // Swagger
 
- 
+
 //Prueba en conexion a la base de datos
 /* app.get("/db-test", async (req, res) => {
   try {
@@ -81,5 +111,5 @@ app.get("/api", (req, res) => {
   });
 });
 
-export default app; 
+export default app;
 
