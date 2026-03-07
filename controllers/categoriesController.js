@@ -1,5 +1,4 @@
 import context from '../context/AppContext.js';
-import path from 'path'
 const { Sequelize } = context
 import { Op } from 'sequelize';
 
@@ -9,7 +8,7 @@ export async function GetAll(req, res, next) {
     try {
         const categories = await context.CategoriesModel.findAll({ where: { companyId: companyId } });
 
-        if (!categories) {
+        if (categories.length === 0) {
             res.status(204).end();
         }
 
@@ -25,16 +24,16 @@ export async function GetAll(req, res, next) {
 
 
 export async function GetById(req, res, next) {
-    const { categorieId } = req.params;
-    const categorieCompanyId = req.user.companyId
+    const { categoryId } = req.params;
+    const categoryCompanyId = req.user.companyId
 
     try {
-        const category = context.CategoriesModel.findOne({ where: { id: categorieId, companyId: categorieCompanyId } });
+        const category = await context.CategoriesModel.findOne({ where: { id: categoryId, companyId: categoryCompanyId } });
 
-        if (!categorie) {
+        if (!category) {
             const error = new Error("Category not found or does not belong to your company.");
             error.statusCode = 404;
-            error.data = { categorieId: categorieId };
+            error.data = { categoryId: categoryId };
             throw error;
         }
 
@@ -76,8 +75,7 @@ export async function CreateCategory(req, res, next) {
             description: categoryDescription,
             companyId: categoryCompanyId
         })
-
-        await transaction.commit();
+        
         res.status(200).json({ message: "Category created successfully.", data: newCategory })
     }
     catch (err) {
@@ -95,7 +93,7 @@ export async function EditCategory(req, res, next) {
     } = req.body
 
 
-    const categoryId = req.params
+    const { categoryId } = req.params
     const companyId = req.user.companyId
 
     try {
@@ -108,16 +106,13 @@ export async function EditCategory(req, res, next) {
             throw error;
         }
 
-        const categoryCompanyId = category.companyId
-
         const updatedCategory = await context.CategoriesModel.update({
             name: categoryName,
             description: categoryDescription,      
         }, { where: { id: categoryId } })
 
         res.status(200).json({
-            message: "Category updated successfully.",
-            data: updatedCategory
+            message: "Category updated successfully."
         })
 
     }

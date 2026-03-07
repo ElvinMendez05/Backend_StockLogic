@@ -24,15 +24,17 @@ const router = express.Router();
  * 
  * @swagger
  * /api/categories:
- *   post:
- *     summary: Get all categories
- *     description: Get all categories data
- *     tags: [Categories]
- *     security:
- *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
+ *   get:
+ *      summary: Get all categories
+ *      description: Get all categories data
+ *      tags: [Categories]
+ *      security:
+ *        - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *      responses:
  *       200:
  *         description: Categories data fetched successfully
+ *       204:
+ *         description: There is no categories created.
  *       401:
  *         description: Not authenticated or invalid token
  */
@@ -42,8 +44,8 @@ router.get('/categories', isAuth, isRoleAllowed("ALL_ROLES"), GetAll);
 /**
  * 
  * @swagger
- * /api/categories/{id}:
- *   post:
+ * /api/categories/{categoryId}:
+ *   get:
  *     summary: Get a category by its id
  *     description: Get a category data by its id
  *     tags: [Categories]
@@ -51,18 +53,18 @@ router.get('/categories', isAuth, isRoleAllowed("ALL_ROLES"), GetAll);
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: categoryId
  *         required: true
  *         description: The ID of the category to retrieve
  *         schema:
- *           type: uuid
+ *           type: string
  *     responses:
  *       200:
  *         description: Category data fetched successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.get('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdCategory, handleValidationErrors(), GetById);
+router.get('/categories/:categoryId', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdCategory, handleValidationErrors(), GetById);
 
 /**
  * 
@@ -77,7 +79,7 @@ router.get('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByI
  *     requestBody:
  *      required: true
  *      content:
- *        multipart/from-data:
+ *        application/json:
  *           schema:
  *              type: object
  *              properties:
@@ -94,14 +96,14 @@ router.get('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByI
  *       400:
  *          description: Invalid request
  */
-router.post('/categories', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateCategory, handleValidationErrors(), CreateCategory);
+router.post('/categories', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateCreateCategory, handleValidationErrors(), CreateCategory);
 
 
 /**
  * 
  * @swagger
- * /api/categories/{id}:  
- *   post:
+ * /api/categories/{categoryId}:  
+ *   put:
  *     summary: Edit a category by ID
  *     description: Edit the data of a category via ID
  *     tags: [Categories]
@@ -109,15 +111,15 @@ router.post('/categories', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateCat
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: categoryId
  *         required: true
- *         description: The ID of the categorie to edit
+ *         description: The ID of the category to edit
  *         schema:
- *           type: uuid 
+ *           type: string 
  *     requestBody:
  *      required: true
  *      content:
- *        multipart/from-data:
+ *        application/json:
  *           schema:
  *              type: object
  *              properties:
@@ -134,13 +136,13 @@ router.post('/categories', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateCat
  *       400:
  *          description: Invalid request
  */
-router.put('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateEditCategory, handleValidationErrors(), EditCategory);
+router.put('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateEditCategory, handleValidationErrors(), EditCategory);
 
 /**
  * 
  * @swagger
- * /api/categories/{id}:
- *   post:
+ * /api/categories/{categoryId}:
+ *   delete:
  *     summary: Delete a category by its id
  *     description: Delete a category data by its id
  *     tags: [Categories]
@@ -148,17 +150,17 @@ router.put('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateEditCa
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: categoryId
  *         required: true
  *         description: The ID of the category to delete
  *         schema:
- *           type: uuid
+ *           type: string
  *     responses:
  *       200:
  *         description: Category deleted successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.delete('/categories/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateDeleteCategory, handleValidationErrors(), DeleteCategory);
+router.delete('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateDeleteCategory, handleValidationErrors(), DeleteCategory);
 
 export default router;

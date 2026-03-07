@@ -1,5 +1,6 @@
 import context from '../context/AppContext.js';
 import path from 'path'
+import fs from 'fs'
 const { Sequelize } = context
 import { Op } from 'sequelize';
 
@@ -9,7 +10,7 @@ export async function GetAll(req, res, next) {
     try {
         const products = await context.ProductsModel.findAll({ where: { companyId: companyId } });
 
-        if (!products) {
+        if (products.length === 0) {
             res.status(204).end();
         }
 
@@ -28,7 +29,7 @@ export async function GetById(req, res, next) {
     const productCompanyId = req.user.companyId
 
     try {
-        const product = context.ProductsModel.findOne({ where: { id: productId, companyId: productCompanyId } });
+        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: productCompanyId } });
 
         if (!product) {
             const error = new Error("Product not found or does not belong to your company.");
@@ -69,9 +70,11 @@ export async function CreateProduct(req, res, next) {
     const productCompanyId = req.user.companyId
     const productImage = req.file;
 
+    let productImageUrl
+
     try {
 
-        if (productMaxStock < productCurrentStock) {
+        if (parseInt(productCurrentStock) > parseInt(productMaxStock) ) {
             const error = new Error("Product max stock cant be less than the current stock.");
             error.statusCode = 401;
             error.data = { productMaxStock: productMaxStock, productCurrentStock: productCurrentStock };
@@ -102,14 +105,14 @@ export async function CreateProduct(req, res, next) {
                     throw error;
                 } */
 
-        const productImageUrl = "\\" + path.relative("public", "uploads", productCompanyId, "products", productImage.path)
+        productImageUrl = "\\" + path.relative("public", productImage.path)
 
         //Product SKU code creation
-        const productSKUPrefix = productName.substring(0, 3).toUpperCase();
+        const productSKUPrefix = productName.replace(/\s+/g, '').substring(0, 3).toUpperCase();
 
         const lastProduct = await context.ProductsModel.findOne({
             where: {
-                companyId: { productCompanyId },
+                companyId: productCompanyId,
                 sku: { [Op.like]: `${productSKUPrefix}-%` }
             },
             order: [['createdAt', 'DESC']],
@@ -135,9 +138,9 @@ export async function CreateProduct(req, res, next) {
             currentStock: productCurrentStock,
             minStock: productMinStock,
             maxStock: productMaxStock,
-            productCategoryId: productCategoryId,
-            productCompanyId: productCompanyId,
-            //productProviderId: productProviderId,
+            categoryId: productCategoryId,
+            companyId: productCompanyId,
+            //providerId: productProviderId,
         }, { transaction })
 
         /*         await context.InventoryMovementsModel.create({
@@ -161,6 +164,7 @@ export async function CreateProduct(req, res, next) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
+
         next(err);
     }
 }
@@ -178,9 +182,11 @@ export async function EditProduct(req, res, next) {
     } = req.body
 
 
-    const productId = req.params
+    const { productId } = req.params
     const productImage = req.file
     const companyId = req.user.companyId
+
+    let productImageUrl
 
     try {
         const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId } });
@@ -194,7 +200,7 @@ export async function EditProduct(req, res, next) {
 
         const productCompanyId = product.companyId
 
-        if (productMaxStock < product.currentStock) {
+        if (parseInt(product.currentStock) > parseInt(productMaxStock)) {
             const error = new Error("Product max stock cant be less than the current stock.");
             error.statusCode = 401;
             error.data = { productMaxStock: productMaxStock, productCurrentStock: product.currentStock };
@@ -218,9 +224,9 @@ export async function EditProduct(req, res, next) {
                     throw error;
                 } */
 
-        let productImageUrl = product.imageUrl;
+        productImageUrl = product.imageUrl;
         if (productImage) {
-            productImageUrl = "\\" + path.relative("public", productCompanyId, productImage.path)
+            productImageUrl = "\\" + path.relative("public", productImage.path)
         }
 
         //Product SKU code update
@@ -237,8 +243,8 @@ export async function EditProduct(req, res, next) {
             costPrice: productCostPrice,
             minStock: productMinStock,
             maxStock: productMaxStock,
-            productCategoryId: productCategoryId,
-            //productProviderId: productProviderId,           
+            categoryId: productCategoryId,
+            //providerId: productProviderId,           
         }, { where: { id: productId } })
 
         res.status(200).json({
@@ -247,10 +253,11 @@ export async function EditProduct(req, res, next) {
         })
 
     }
-    catch (err) {
+    catch(err) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
+
         next(err);
     }
 }

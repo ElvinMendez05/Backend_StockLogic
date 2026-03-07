@@ -16,6 +16,7 @@ export const validateCreateCategory = [
 ];
 
 export const validateEditCategory = [
+    param("categoryId").trim().notEmpty().withMessage("Category ID is required").escape(),
     body("categoryName").trim().notEmpty().withMessage("Category name is required").escape(),
     body("categoryDescription")
         .trim()

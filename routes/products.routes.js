@@ -24,15 +24,17 @@ const router = express.Router();
  * 
  * @swagger
  * /api/products:
- *   post:
- *     summary: Get all products
- *     description: Get all products data
- *     tags: [Products]
- *     security:
- *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
+ *   get:
+ *      summary: Get all products
+ *      description: Get all products data
+ *      tags: [Products]
+ *      security:
+ *        - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *      responses:
  *       200:
  *         description: Products data fetched successfully
+ *       204:
+ *         description: There is no products created.
  *       401:
  *         description: Not authenticated or invalid token
  */
@@ -42,8 +44,8 @@ router.get('/products', isAuth, isRoleAllowed("ALL_ROLES"), GetAll);
 /**
  * 
  * @swagger
- * /api/products/{id}:
- *   post:
+ * /api/products/{productId}:
+ *   get:
  *     summary: Get a product by its id
  *     description: Get a product data by its id
  *     tags: [Products]
@@ -51,18 +53,18 @@ router.get('/products', isAuth, isRoleAllowed("ALL_ROLES"), GetAll);
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productId
  *         required: true
  *         description: The ID of the product to retrieve
  *         schema:
- *           type: uuid
+ *           type: string
  *     responses:
  *       200:
  *         description: Product data fetched successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.get('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdProduct, handleValidationErrors(), GetById);
+router.get('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdProduct, handleValidationErrors(), GetById);
 
 /**
  * 
@@ -77,7 +79,7 @@ router.get('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdP
  *     requestBody:
  *      required: true
  *      content:
- *        multipart/from-data:
+ *        multipart/form-data:
  *           schema:
  *              type: object
  *              properties:
@@ -86,9 +88,11 @@ router.get('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdP
  *                  productDescription:
  *                      type: string
  *                  productPrice:
- *                      type: float
+ *                      type: number
+ *                      format: float
  *                  productCostPrice:
- *                      type: float
+ *                      type: number
+ *                      format: float
  *                  productCurrentStock:
  *                      type: integer
  *                  productMinStock:
@@ -96,7 +100,7 @@ router.get('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateGetByIdP
  *                  productMaxStock:
  *                      type: integer
  *                  productCategoryId:
- *                      type: uuid
+ *                      type: string
  *                  productImage:
  *                      type: string
  *                      format: binary              
@@ -122,8 +126,8 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
 /**
  * 
  * @swagger
- * /api/products/{id}:  
- *   post:
+ * /api/products/{productId}:  
+ *   put:
  *     summary: Edit a product by ID
  *     description: Edit the data of a product via ID
  *     tags: [Products]
@@ -131,15 +135,15 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productId
  *         required: true
  *         description: The ID of the product to edit
  *         schema:
- *           type: uuid 
+ *           type: string 
  *     requestBody:
  *      required: true
  *      content:
- *        multipart/from-data:
+ *        multipart/form-data :
  *           schema:
  *              type: object
  *              properties:
@@ -148,15 +152,17 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *                  productDescription:
  *                      type: string
  *                  productPrice:
- *                      type: float
+ *                      type: number
+ *                      format: float
  *                  productCostPrice:
- *                      type: float
+ *                      type: number
+ *                      format: float
  *                  productMinStock:
  *                      type: integer
  *                  productMaxStock:
  *                      type: integer
  *                  productCategoryId:
- *                      type: uuid
+ *                      type: string
  *                  productImage:
  *                      type: string
  *                      format: binary                 
@@ -175,13 +181,13 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *       400:
  *          description: Invalid request
  */
-router.put('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateEditProduct, handleValidationErrors(), EditProduct);
+router.put('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateEditProduct, handleValidationErrors(), EditProduct);
 
 /**
  * 
  * @swagger
- * /api/products/{id}:
- *   post:
+ * /api/products/{productId}:
+ *   delete:
  *     summary: Delete a product by its id
  *     description: Delete a product data by its id
  *     tags: [Products]
@@ -189,17 +195,17 @@ router.put('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateEditProd
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: productId
  *         required: true
  *         description: The ID of the product to delete
  *         schema:
- *           type: uuid
+ *           type: string
  *     responses:
  *       200:
  *         description: Product deleted successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.delete('/products/:id', isAuth, isRoleAllowed("ALL_ROLES"), validateDeleteProduct, handleValidationErrors(), DeleteProduct);
+router.delete('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateDeleteProduct, handleValidationErrors(), DeleteProduct);
 
 export default router;

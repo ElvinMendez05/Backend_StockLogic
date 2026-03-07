@@ -59,18 +59,15 @@ export const validateCreateProduct = [
         .escape(), */
     body("productImage")
         .custom((value, { req }) => {
-            if (!value) {
-                throw new Error("Product image is required");
-            }
             if (!req.file) {
                 throw new Error("Product image file is required");
             }
             return true;
         })
-        .escape(),
 ];
 
 export const validateEditProduct = [
+    param("productId").trim().notEmpty().withMessage("Product ID is required").escape(),
     body("productName")
         .trim()
         .notEmpty()
@@ -115,15 +112,11 @@ export const validateEditProduct = [
         .escape(), */
     body("productImage")
         .custom((value, { req }) => {
-            if (!value) {
-                throw new Error("Product image is required");
-            }
             if (!req.file) {
                 throw new Error("Product image file is required");
             }
             return true;
         })
-        .escape(),
 ];
 
 export const validateDeleteProduct = [

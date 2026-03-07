@@ -45,10 +45,6 @@ const Products = connection.define('Products', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    salesCount: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
     categoryId: {
         type: DataTypes.UUID,
         allowNull: false,

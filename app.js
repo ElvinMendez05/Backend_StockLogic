@@ -4,7 +4,10 @@ import './config/loadEnv.js';
 import express from "express";
 import cors from "cors";
 import { setupSwagger } from "./swagger.js";
-import { v4 as guidV4} from 'uuid';
+import { v4 as guidV4 } from 'uuid';
+import multer from 'multer';
+import path from 'path';
+import { projectRoot } from './helpers/Path.js'
 
 //Route importations
 import authRoutes from "./routes/auth.routes.js"
@@ -25,9 +28,9 @@ const onlyImageFilter = (req, file, cb) => {
   if (file.mimetype == "image/png" || file.mimetype == "image/jpeg" || file.mimetype == "image/jpg") {
     cb(null, true);
   } else {
-    cb(new Error())
+    cb(new Error("Invalid file type. Only PNG, JPEG and JPG files area allowed."), false)
   }
-}
+};
 
 //Set up multer for file uploads
 const imageStorageForProductsImages = multer.diskStorage({
@@ -38,7 +41,7 @@ const imageStorageForProductsImages = multer.diskStorage({
     );
   },
   filename: (req, file, cb) => {
-    const fileName = `${guidV4()}-${file.originalName}`
+    const fileName = `${guidV4()}-${file.originalname}`;
     cb(null, fileName)
   }
 })
@@ -48,8 +51,8 @@ app.use(multer({ storage: imageStorageForProductsImages, fileFilter: onlyImageFi
 //Set up api headers
 app.use(cors({
   origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : ["*"],
-  methods: process.env.CORS_METHODS ? process.env.CORS_METHODS.split(",") : ["OPTIONS, GET, POST, PUT, PATCH, DELETE"],
-  allowedHeaders: process.env.CORS_ALLOWED_HEADERS ? process.env.CORS_ALLOWED_HEADERS.split(",") : ["Content-Type, Authorization"],
+  methods: process.env.CORS_METHODS ? process.env.CORS_METHODS.split(",") : ["OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: process.env.CORS_ALLOWED_HEADERS ? process.env.CORS_ALLOWED_HEADERS.split(",") : ["Content-Type", "Authorization"],
 }));
 
 //Routes
@@ -73,14 +76,11 @@ app.use((error, req, res, next) => {
 });
 
 //404
-
 app.use((req, res) => {
   res.status(404).json({
     message: "404 Not found",
   });
 });
-
-// Swagger
 
 
 //Prueba en conexion a la base de datos
@@ -100,16 +100,6 @@ app.use((req, res) => {
   }
 });
  */
-
-
-
-// Ruta de prueba
-app.get("/api", (req, res) => {
-  res.json({
-    ok: true,
-    message: "API funcionando correctamente"
-  });
-});
 
 export default app;
 
