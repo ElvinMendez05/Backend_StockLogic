@@ -1,8 +1,7 @@
-import { timeStamp } from 'console';
 import connection from '../config/dbConfig.js'
 import { DataTypes } from 'sequelize'
 
-const Companies = connection.define('Companies', {
+const Categories = connection.define('Categories', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -13,9 +12,19 @@ const Companies = connection.define('Companies', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    email: {
-        type: DataTypes.STRING,
+    description: {
+        type: DataTypes.TEXT,
         allowNull: false
+    },
+    companyId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        References: {
+            model: "Companies",
+            key: "id"
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
     }
 },
 {
@@ -24,4 +33,4 @@ const Companies = connection.define('Companies', {
 }
 );
 
-export default Companies
+export default Categories

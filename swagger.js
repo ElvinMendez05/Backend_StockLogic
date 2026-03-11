@@ -2,6 +2,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express"
 import path from 'path';
 import {projectRoot} from "./helpers/Path.js"
+import { secureHeapUsed } from "crypto";
 
 const swaggerDefinition = {
   definition: {
@@ -16,6 +17,15 @@ const swaggerDefinition = {
         url: process.env.APP_URL || "http://localhost:3000",
       },
     ],
+    components: {
+      securitySchemes: {
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
   },
   apis: [ path.join(projectRoot, "./app.js"), path.join(projectRoot, "./routes/*.js")],
 };

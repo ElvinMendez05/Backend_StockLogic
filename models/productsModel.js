@@ -1,7 +1,7 @@
 import connection from '../config/dbConfig.js'
 import { DataTypes } from 'sequelize'
 
-const Users = connection.define('Users', {
+const Products = connection.define('Products', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -12,34 +12,48 @@ const Users = connection.define('Users', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    email: {
+    sku: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true 
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    imageURL: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    password: {
-        type: DataTypes.STRING,
+    price: {
+        type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     },
-    activateToken: {
-        type: DataTypes.STRING,
-        allowNull: true
+    costPrice: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
     },
-    activateTokenExpiration: {
-        type: DataTypes.DATE,
-        allowNull: true
+    currentStock: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
-    resetToken: {
-        type: DataTypes.STRING,
-        allowNull: true,
+    minStock: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
-    resetTokenExpiration: {
-        type: DataTypes.DATE,
-        allowNull: true,
+    maxStock: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
-    isActive: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: true,
+    categoryId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        References: {
+            model: "Categories",
+            key: "id"
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
     },
     companyId: {
         type: DataTypes.UUID,
@@ -51,16 +65,6 @@ const Users = connection.define('Users', {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
     },
-    roleId: {
-        type: DataTypes.UUID,
-        allowNull: false,
-        References: {
-            model: "Roles",
-            key: "id"
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE"
-    }
 },
 {
     freezeTableName: true,
@@ -68,4 +72,4 @@ const Users = connection.define('Users', {
 }
 );
 
-export default Users
+export default Products

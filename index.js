@@ -10,6 +10,7 @@ try{
 
   app.listen(PORT || 1433, () => {
       console.log(`App listening at port ${PORT}, at: ${process.env.APP_URL}/`);
+      console.log(`Test the app API at: ${process.env.APP_URL}/SWAGGER/#/`)
   });
 
   console.log("DB Connection Successful.");
