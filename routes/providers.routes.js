@@ -175,8 +175,8 @@ router.put('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validat
  * @swagger
  * /api/providers/{providerId}:
  *   patch:
- *     summary: Change the status of a provider by its id
- *     description: Change provider status by its id
+ *     summary: Switch the status of a provider by its id
+ *     description: Switch the status of a provider by its id
  *     tags: [Providers]
  *     security:
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
@@ -184,12 +184,12 @@ router.put('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validat
  *       - in: path
  *         name: providerId
  *         required: true
- *         description: The ID of the provider to change status
+ *         description: The ID of the provider to switch status
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Provider status changed successfully
+ *         description: Provider status switched successfully
  *       401:
  *         description: Not authenticated or invalid token
  */

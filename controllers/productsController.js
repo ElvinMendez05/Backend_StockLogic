@@ -64,7 +64,7 @@ export async function CreateProduct(req, res, next) {
         productMinStock,
         productMaxStock,
         productCategoryId,
-        //productProviderId 
+        productProviderId 
     } = req.body
 
     const productCompanyId = req.user.companyId
@@ -81,10 +81,10 @@ export async function CreateProduct(req, res, next) {
             throw error;
         }
 
-        const [categoryExists, /*providerExists,*/ companyExists] = await Promise.all([
+        const [companyExists, categoryExists, providerExists, ] = await Promise.all([
+            context.CompaniesModel.findByPk(productCompanyId),
             context.CategoriesModel.findByPk(productCategoryId),
-            //context.ProvidersModel.findOne({ where: { id: providerId }, { companyId: productCompanyId } }),
-            context.CompaniesModel.findByPk(productCompanyId)
+            context.ProvidersModel.findOne({ where: { id: productProviderId, companyId: productCompanyId } })
         ]);
 
         if (!companyExists) {
@@ -99,11 +99,23 @@ export async function CreateProduct(req, res, next) {
             throw error;
         }
 
-        /*         if (!providerExists) {
-                    const error = new Error("The supplier does not exist or does not belong to your company.");
+        if (categoryExists.isActive === false) {
+            const error = new Error("The category is not active.");
+            error.statusCode = 400;
+            throw error;
+        } 
+
+        if (!providerExists) {
+                    const error = new Error("The provider does not exist or is not associated with your company.");
                     error.statusCode = 400;
                     throw error;
-                } */
+        }
+        
+        if (providerExists.isActive === false) {
+            const error = new Error("The provider is not active.");
+            error.statusCode = 400;
+            throw error;
+        } 
 
         productImageUrl = "\\" + path.relative("public", productImage.path)
 
@@ -140,7 +152,7 @@ export async function CreateProduct(req, res, next) {
             maxStock: productMaxStock,
             categoryId: productCategoryId,
             companyId: productCompanyId,
-            //providerId: productProviderId,
+            providerId: productProviderId,
         }, { transaction })
 
         /*         await context.InventoryMovementsModel.create({
@@ -178,7 +190,7 @@ export async function EditProduct(req, res, next) {
         productMinStock,
         productMaxStock,
         productCategoryId,
-        //productProviderId 
+        productProviderId 
     } = req.body
 
 
@@ -207,9 +219,9 @@ export async function EditProduct(req, res, next) {
             throw error;
         }
 
-        const [categoryExists, /*providerExists*/] = await Promise.all([
+        const [categoryExists, providerExists] = await Promise.all([
             context.CategoriesModel.findByPk(productCategoryId),
-            //context.ProvidersModel.findOne({ where: { id: providerId }, { companyId: product.companyId } }),
+            context.ProvidersModel.findOne({ where: { id: productProviderId, companyId: product.companyId } }),
         ]);
 
         if (!categoryExists) {
@@ -218,11 +230,23 @@ export async function EditProduct(req, res, next) {
             throw error;
         }
 
-        /*         if (!providerExists) {
+        if (categoryExists.isActive === false) {
+            const error = new Error("The category is not active.");
+            error.statusCode = 400;
+            throw error;
+        } 
+
+        if (!providerExists) {
                     const error = new Error("The supplier does not exist or does not belong to your company.");
                     error.statusCode = 400;
                     throw error;
-                } */
+        }
+
+        if (providerExists.isActive === false) {
+            const error = new Error("The provider is not active.");
+            error.statusCode = 400;
+            throw error;
+        } 
 
         productImageUrl = product.imageUrl;
         if (productImage) {
@@ -244,7 +268,7 @@ export async function EditProduct(req, res, next) {
             minStock: productMinStock,
             maxStock: productMaxStock,
             categoryId: productCategoryId,
-            //providerId: productProviderId,           
+            providerId: productProviderId,           
         }, { where: { id: productId } })
 
         res.status(200).json({
