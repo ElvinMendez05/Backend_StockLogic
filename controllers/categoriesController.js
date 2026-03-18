@@ -140,19 +140,19 @@ export async function SwitchStatusCategory(req, res, next) {
             throw error;
         }
 
-        if(category.isActive != false){
+        if(category.isActive !== false){
             await context.CategoriesModel.update({
                 isActive: false  
             }, { where: { id: categoryId } })
     
-            res.status(204).json({ message: "Category deactivated successfully." });
+            return res.status(204).json({ message: "Category deactivated successfully." });
             }
     
         await context.CategoriesModel.update({
             isActive: true 
         }, { where: { id: categoryId } })
 
-        res.status(204).json({ message: "Category activated successfully." });
+        return res.status(204).json({ message: "Category activated successfully." });
   
     }
     catch (err) {
