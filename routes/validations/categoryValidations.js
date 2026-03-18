@@ -27,6 +27,6 @@ export const validateEditCategory = [
         .escape(),
 ];
 
-export const validateDeleteCategory = [
+export const validateSwitchStatusCategory = [
     param("categoryId").trim().notEmpty().withMessage("Category ID is required").escape(),
 ];

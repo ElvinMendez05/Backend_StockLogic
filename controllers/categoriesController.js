@@ -6,7 +6,7 @@ export async function GetAll(req, res, next) {
     const companyId = req.user.companyId
 
     try {
-        const categories = await context.CategoriesModel.findAll({ where: { companyId: companyId } });
+        const categories = await context.CategoriesModel.findAll({ where: { companyId: companyId, isActive: true } });
 
         if (categories.length === 0) {
             res.status(204).end();
@@ -73,7 +73,8 @@ export async function CreateCategory(req, res, next) {
         const newCategory = await context.CategoriesModel.create({
             name: categoryName,
             description: categoryDescription,
-            companyId: categoryCompanyId
+            companyId: categoryCompanyId,
+            isActive: true
         })
         
         res.status(200).json({ message: "Category created successfully.", data: newCategory })
@@ -112,7 +113,8 @@ export async function EditCategory(req, res, next) {
         }, { where: { id: categoryId } })
 
         res.status(200).json({
-            message: "Category updated successfully."
+            message: "Category updated successfully.",
+            data: updatedCategory
         })
 
     }
@@ -124,7 +126,7 @@ export async function EditCategory(req, res, next) {
     }
 }
 
-export async function DeleteCategory(req, res, next) {
+export async function SwitchStatusCategory(req, res, next) {
     const { categoryId } = req.params
     const categoryCompanyId = req.user.companyId
 
@@ -138,9 +140,20 @@ export async function DeleteCategory(req, res, next) {
             throw error;
         }
 
-        await context.CategoriesModel.destroy({ where: { id: categoryId, companyId: categoryCompanyId } });
+        if(category.isActive !== false){
+            await context.CategoriesModel.update({
+                isActive: false  
+            }, { where: { id: categoryId } })
+    
+            return res.status(204).json({ message: "Category deactivated successfully." });
+            }
+    
+        await context.CategoriesModel.update({
+            isActive: true 
+        }, { where: { id: categoryId } })
+
+        return res.status(204).json({ message: "Category activated successfully." });
   
-        res.status(204).json({ message: "Category deleted successfully." })
     }
     catch (err) {
         if (!err.statusCode) {

@@ -4,13 +4,13 @@ import {
     GetById,
     CreateCategory,
     EditCategory,
-    DeleteCategory
+    SwitchStatusCategory
 } from '../controllers/categoriesController.js'
 import {
     validateGetByIdCategory,
     validateCreateCategory,
     validateEditCategory,
-    validateDeleteCategory,
+    validateSwitchStatusCategory,
 } from "./validations/categoryValidations.js"
 import { handleValidationErrors } from "../middlewares/handleValidations.js"
 import isAuth from '../middlewares/isAuth.js'
@@ -142,9 +142,9 @@ router.put('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMI
  * 
  * @swagger
  * /api/categories/{categoryId}:
- *   delete:
- *     summary: Delete a category by its id
- *     description: Delete a category data by its id
+ *   patch:
+ *     summary: Switch the status of a category by its id
+ *     description: Switch the status of a category by its id
  *     tags: [Categories]
  *     security:
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
@@ -152,15 +152,15 @@ router.put('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMI
  *       - in: path
  *         name: categoryId
  *         required: true
- *         description: The ID of the category to delete
+ *         description: The ID of the category to switch status
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Category deleted successfully
+ *         description: Category statsus switched successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.delete('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateDeleteCategory, handleValidationErrors(), DeleteCategory);
+router.patch('/categories/:categoryId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateSwitchStatusCategory, handleValidationErrors(), SwitchStatusCategory);
 
 export default router;

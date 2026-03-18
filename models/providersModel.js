@@ -1,7 +1,7 @@
 import connection from '../config/dbConfig.js'
 import { DataTypes } from 'sequelize'
 
-const Categories = connection.define('Categories', {
+const Providers = connection.define('Providers', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -12,14 +12,35 @@ const Categories = connection.define('Categories', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    description: {
+    taxId: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    contactName: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    address: {
         type: DataTypes.TEXT,
         allowNull: false
+    },
+    website: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        allowNull: false,
+        allowNull: true,
     },
     companyId: {
         type: DataTypes.UUID,
@@ -30,7 +51,7 @@ const Categories = connection.define('Categories', {
         },
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
-    }
+    },
 },
 {
     freezeTableName: true,
@@ -38,4 +59,4 @@ const Categories = connection.define('Categories', {
 }
 );
 
-export default Categories
+export default Providers
