@@ -84,7 +84,7 @@ export async function CreateProduct(req, res, next) {
         const [companyExists, categoryExists, providerExists, ] = await Promise.all([
             context.CompaniesModel.findByPk(productCompanyId),
             context.CategoriesModel.findByPk(productCategoryId),
-            context.ProvidersModel.findOne({ where: { id: providerId, companyId: productCompanyId } })
+            context.ProvidersModel.findOne({ where: { id: productProviderId, companyId: productCompanyId } })
         ]);
 
         if (!companyExists) {
@@ -221,7 +221,7 @@ export async function EditProduct(req, res, next) {
 
         const [categoryExists, providerExists] = await Promise.all([
             context.CategoriesModel.findByPk(productCategoryId),
-            context.ProvidersModel.findOne({ where: { id: providerId, companyId: product.companyId } }),
+            context.ProvidersModel.findOne({ where: { id: productProviderId, companyId: product.companyId } }),
         ]);
 
         if (!categoryExists) {

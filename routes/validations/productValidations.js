@@ -51,7 +51,7 @@ export const validateCreateProduct = [
         .isUUID()
         .withMessage("A valid Category ID is required")
         .escape(),
-    body("providerId")
+    body("productProviderId")
         .notEmpty()
         .withMessage("Product provider ID is required")
         .isUUID()
@@ -104,7 +104,7 @@ export const validateEditProduct = [
         .isUUID()
         .withMessage("A valid Category ID is required")
         .escape(),
-    body("providerId")
+    body("productProviderId")
         .notEmpty()
         .withMessage("Product provider ID is required")
         .isUUID()
