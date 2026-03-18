@@ -4,6 +4,7 @@ import RolesModel from '../models/rolesModel.js';
 import CompaniesModel from '../models/companiesModel.js';
 import ProductsModel from '../models/productsModel.js';
 import CategoriesModel from '../models/categoriesModel.js';
+import ProvidersModel from '../models/providersModel.js'
 
 //Initialize Connection
 try{
@@ -27,6 +28,10 @@ CompaniesModel.hasMany(UsersModel, { foreignKey: "companyId"});
 CategoriesModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(CategoriesModel, { foreignKey: "companyId"});
 
+//Providers-Compaines
+ProvidersModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
+CompaniesModel.hasMany(ProvidersModel, { foreignKey: "companyId"});
+
 //Products-Companies
 ProductsModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(ProductsModel, { foreignKey: "companyId"});
@@ -35,6 +40,12 @@ CompaniesModel.hasMany(ProductsModel, { foreignKey: "companyId"});
 ProductsModel.belongsTo(CategoriesModel, { foreignKey: "categoryId"});
 CategoriesModel.hasMany(ProductsModel, { foreignKey: "categoryId"});
 
+//Products-Providers
+ProductsModel.belongsTo(ProvidersModel, { foreignKey: "providerId"});
+ProvidersModel.hasMany(ProductsModel, { foreignKey: "providerId"});
+
+
+
 
 export default{
     Sequelize: connection, 
@@ -42,5 +53,6 @@ export default{
     RolesModel,
     CompaniesModel,
     ProductsModel,
-    CategoriesModel
+    CategoriesModel,
+    ProvidersModel
 }
