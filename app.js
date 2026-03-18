@@ -13,6 +13,7 @@ import { projectRoot } from './helpers/Path.js'
 import authRoutes from "./routes/auth.routes.js"
 import categoriesRoutes from "./routes/categories.routes.js"
 import productsRoutes from "./routes/products.routes.js"
+import providersRoutes from "./routes/providers.routes.js"
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use(cors({
 app.use("/api", authRoutes);
 app.use("/api", categoriesRoutes);
 app.use("/api", productsRoutes);
+app.use("/api", providersRoutes);
 
 //Error handling middlewares
 app.use((error, req, res, next) => {
