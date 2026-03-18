@@ -51,12 +51,12 @@ export const validateCreateProduct = [
         .isUUID()
         .withMessage("A valid Category ID is required")
         .escape(),
-/*     body("providerId")
+    body("providerId")
         .notEmpty()
         .withMessage("Product provider ID is required")
         .isUUID()
         .withMessage("A valid Provider ID is required")
-        .escape(), */
+        .escape(),
     body("productImage")
         .custom((value, { req }) => {
             if (!req.file) {
@@ -104,12 +104,12 @@ export const validateEditProduct = [
         .isUUID()
         .withMessage("A valid Category ID is required")
         .escape(),
-/*     body("providerId")
+    body("providerId")
         .notEmpty()
         .withMessage("Product provider ID is required")
         .isUUID()
         .withMessage("A valid Provider ID is required")
-        .escape(), */
+        .escape(), 
     body("productImage")
         .custom((value, { req }) => {
             if (!req.file) {
