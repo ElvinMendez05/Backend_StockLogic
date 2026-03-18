@@ -9,9 +9,9 @@ export async function GetAll(req, res, next) {
 
     try {
         const providers = await context.ProvidersModel.findAll({
-            where: { 
-                companyId: companyId, 
-                isActive: true 
+            where: {
+                companyId: companyId,
+                isActive: true
             },
             attributes: {
                 include: [
@@ -45,18 +45,18 @@ export async function GetById(req, res, next) {
     const providerCompanyId = req.user.companyId
 
     try {
-        const provider = await context.ProvidersModel.findOne({ 
-            where: { 
-                id: providerId, 
-                companyId: providerCompanyId 
+        const provider = await context.ProvidersModel.findOne({
+            where: {
+                id: providerId,
+                companyId: providerCompanyId
             },
             include: [{
                 model: context.ProductsModel,
                 as: 'Products',
                 attributes: [
                     'id',
-                    'name', 
-                    'sku', 
+                    'name',
+                    'sku',
                     'description',
                     'imageUrl',
                     'price',
@@ -105,7 +105,7 @@ export async function CreateProvider(req, res, next) {
 
     try {
 
-        const [UniqueDataExists, companyExists] = await Promise.all([
+        const [companyExists, uniqueDataExists,] = await Promise.all([
             context.CompaniesModel.findByPk(providerCompanyId),
             context.ProvidersModel.findOne({
                 where: {
@@ -124,7 +124,7 @@ export async function CreateProvider(req, res, next) {
             throw error;
         }
 
-        if (!UniqueDataExists) {
+        if (uniqueDataExists) {
             const error = new Error("The provider email or tax id is already registered by another provider.");
             error.statusCode = 400;
             throw error;
@@ -142,7 +142,6 @@ export async function CreateProvider(req, res, next) {
             companyId: providerCompanyId
         });
 
-        await transaction.commit();
         res.status(200).json({ message: "Provider created successfully.", data: newProvider })
     }
     catch (err) {
@@ -182,7 +181,7 @@ export async function EditProvider(req, res, next) {
 
         const providerCompanyId = provider.companyId
 
-        const [companyExists, UniqueDataExists, ] = await Promise.all([
+        const [companyExists, uniqueDataExists,] = await Promise.all([
             context.CompaniesModel.findByPk(providerCompanyId),
             context.ProvidersModel.findOne({
                 where: {
@@ -202,7 +201,7 @@ export async function EditProvider(req, res, next) {
             throw error;
         }
 
-        if (!UniqueDataExists) {
+        if (uniqueDataExists) {
             const error = new Error("The provider email or tax id is already registered by another provider.");
             error.statusCode = 400;
             throw error;
@@ -215,7 +214,7 @@ export async function EditProvider(req, res, next) {
             email: providerEmail,
             phone: providerPhone,
             address: providerAddress,
-            website: providerWebsite,    
+            website: providerWebsite,
         }, { where: { id: providerId } })
 
         res.status(200).json({
@@ -224,7 +223,7 @@ export async function EditProvider(req, res, next) {
         })
 
     }
-    catch(err) {
+    catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
@@ -246,19 +245,20 @@ export async function SwitchStatusProvider(req, res, next) {
             error.data = { providerId: providerId };
             throw error;
         }
-        if(provider.isActive != false){
-        await context.ProvidersModel.update({
-            isActive: false  
-        }, { where: { id: providerId } })
 
-        res.status(204).json({ message: "Provider deactivated successfully." });
+        if (provider.isActive !== false) {
+            await context.ProvidersModel.update({
+                isActive: false
+            }, { where: { id: providerId } })
+
+            return res.status(200).json({ message: "Provider deactivated successfully." });
         }
 
         await context.ProvidersModel.update({
-            isActive: true 
+            isActive: true
         }, { where: { id: providerId } })
 
-        res.status(204).json({ message: "Provider activated successfully." });
+        return res.status(200).json({ message: "Provider activated successfully." });
 
     }
     catch (err) {
