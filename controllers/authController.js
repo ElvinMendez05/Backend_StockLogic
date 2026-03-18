@@ -182,7 +182,7 @@ export async function RegisterCompany(req, res, next) {
 
 
 
-        res.status(201).json({ message: "User registered successfully. Please check your email to activate your account.", data: { email: companyEmail } })
+        res.status(201).json({ message: "User registered successfully. Please check your email to activate your account.", data: { newUser: newUser, newCompany: newCompany } })
         await transaction.commit();
 
     } catch (err) {
