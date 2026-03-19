@@ -20,6 +20,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use('/api', express.static(path.join(projectRoot, 'public')));
+
+//Específicamente para las imágenes de productos 
+app.use('/api/uploads/images/products', express.static(path.join(projectRoot, 'public', 'uploads', 'images', 'products')));
+
 //Set up swagger
 setupSwagger(app);
 
