@@ -13,6 +13,7 @@ import { projectRoot } from './helpers/Path.js'
 import authRoutes from "./routes/auth.routes.js"
 import categoriesRoutes from "./routes/categories.routes.js"
 import productsRoutes from "./routes/products.routes.js"
+import providersRoutes from "./routes/providers.routes.js"
 
 const app = express();
 
@@ -20,10 +21,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+<<<<<<< HEAD
 app.use('/api', express.static(path.join(projectRoot, 'public')));
 
 //Específicamente para las imágenes de productos 
 app.use('/api/uploads/images/products', express.static(path.join(projectRoot, 'public', 'uploads', 'images', 'products')));
+=======
+//Web browser accesible directories
+app.use('/public', express.static(path.join(projectRoot, 'public')));
+>>>>>>> 0520b7a08c8b22d42bec85a61d3ef4baf86b2cf3
 
 //Set up swagger
 setupSwagger(app);
@@ -64,6 +70,7 @@ app.use(cors({
 app.use("/api", authRoutes);
 app.use("/api", categoriesRoutes);
 app.use("/api", productsRoutes);
+app.use("/api", providersRoutes);
 
 //Error handling middlewares
 app.use((error, req, res, next) => {

@@ -101,6 +101,8 @@ router.get('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateG
  *                      type: integer
  *                  productCategoryId:
  *                      type: string
+ *                  productProviderId:
+ *                      type: string
  *                  productImage:
  *                      type: string
  *                      format: binary              
@@ -113,6 +115,7 @@ router.get('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateG
  *                  - productMinStock
  *                  - productMaxStock
  *                  - productCategoryId
+ *                  - productProviderId 
  *                  - productImage
  *     responses:
  *       201:
@@ -163,6 +166,8 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *                      type: integer
  *                  productCategoryId:
  *                      type: string
+ *                  productProviderId:
+ *                      type: string
  *                  productImage:
  *                      type: string
  *                      format: binary                 
@@ -174,6 +179,7 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *                  - productMinStock
  *                  - productMaxStock
  *                  - productCategoryId
+ *                  - productProviderId 
  *                  - productImage
  *     responses:
  *       201:

@@ -55,6 +55,16 @@ const Products = connection.define('Products', {
         onDelete: "CASCADE",
         onUpdate: "CASCADE"
     },
+    providerId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        References: {
+            model: "Providers",
+            key: "id"
+        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+    },
     companyId: {
         type: DataTypes.UUID,
         allowNull: false,
