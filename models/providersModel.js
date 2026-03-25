@@ -40,7 +40,7 @@ const Providers = connection.define('Providers', {
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        allowNull: true,
+        allowNull: false,
     },
     companyId: {
         type: DataTypes.UUID,

@@ -36,10 +36,10 @@ export async function Login(req, res, next) {
 
 
         if (!user.isActive) {
-            if (user.activateTokenExpiration <= Date.now()) {
+            if (user.activateTokenExpiration && user.activateTokenExpiration <= Date.now() ) {
 
-                transaction = await Sequelize.transaction();
-                masterRoleResult = await context.RolesModel.findOne({ where: { code: "SUPER_ADMIN" } }, transaction);
+                const transaction = await Sequelize.transaction();
+                const masterRoleResult = await context.RolesModel.findOne({ where: { code: "SUPER_ADMIN" } }, transaction);
 
                 if(!masterRoleResult){
                     const error = new Error("No main admin role found to proceed.");
@@ -47,7 +47,7 @@ export async function Login(req, res, next) {
                     error.data = { email: userEmail };                   
                 }
 
-                userResult = await context.UsersModel.destroy({ where: { email: user.email } }, transaction);
+                await context.UsersModel.destroy({ where: { email: user.email } }, transaction);
 
                 if (user.roleId == masterRoleResult.id) {
                     await context.CompaniesModel.destroy({ where: { id: user.companyId } }, transaction);
@@ -169,7 +169,7 @@ export async function RegisterCompany(req, res, next) {
             roleId: role.id,
         }, { transaction: transaction });
 
-
+        await transaction.commit();
 
         await sendEmail({
             to: companyEmail,
@@ -180,10 +180,8 @@ export async function RegisterCompany(req, res, next) {
                 <p>Si usted no se ha registrado, porfavor ignore este correo.</p>`
         });
 
-
-
         res.status(201).json({ message: "User registered successfully. Please check your email to activate your account.", data: { newUser: newUser, newCompany: newCompany } })
-        await transaction.commit();
+
 
     } catch (err) {
         if (transaction) await transaction.rollback();

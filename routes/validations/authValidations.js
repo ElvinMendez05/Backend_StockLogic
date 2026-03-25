@@ -11,7 +11,7 @@ export const validateLogin = [
 
 export const validateRegisterCompany = [
     body("companyName").trim().notEmpty().withMessage("Company name is required").escape(),
-    body("userName").trim().notEmpty().withMessage("Company name is required").escape(),
+    body("userName").trim().notEmpty().withMessage("User name is required").escape(),
     body("companyEmail").trim().isEmail().withMessage("Invalid email format").escape(),
     body("userPassword")
         .trim()
