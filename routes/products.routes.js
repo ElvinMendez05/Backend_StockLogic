@@ -123,7 +123,7 @@ router.get('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateG
  *       400:
  *          description: Invalid request
  */
-router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProduct, handleValidationErrors(), CreateProduct);
+router.post('/products', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateCreateProduct, handleValidationErrors(), CreateProduct);
 
 
 /**
@@ -187,7 +187,7 @@ router.post('/products', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProdu
  *       400:
  *          description: Invalid request
  */
-router.put('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateEditProduct, handleValidationErrors(), EditProduct);
+router.put('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateEditProduct, handleValidationErrors(), EditProduct);
 
 /**
  * 
@@ -212,6 +212,6 @@ router.put('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateE
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.delete('/products/:productId', isAuth, isRoleAllowed("ALL_ROLES"), validateDeleteProduct, handleValidationErrors(), DeleteProduct);
+router.delete('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateDeleteProduct, handleValidationErrors(), DeleteProduct);
 
 export default router;
