@@ -14,6 +14,8 @@ import authRoutes from "./routes/auth.routes.js"
 import categoriesRoutes from "./routes/categories.routes.js"
 import productsRoutes from "./routes/products.routes.js"
 import providersRoutes from "./routes/providers.routes.js"
+import usersRoutes from './routes/users.routes.js'
+import rolesRoutes from'./routes/roles.routes.js'
 
 const app = express();
 
@@ -64,6 +66,8 @@ app.use("/api", authRoutes);
 app.use("/api", categoriesRoutes);
 app.use("/api", productsRoutes);
 app.use("/api", providersRoutes);
+app.use("/api", usersRoutes);
+app.use("/api", rolesRoutes);
 
 //Error handling middlewares
 app.use((error, req, res, next) => {

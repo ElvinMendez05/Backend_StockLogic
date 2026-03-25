@@ -112,7 +112,7 @@ router.get('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validat
  *       400:
  *          description: Invalid request
  */
-router.post('/Providers', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProvider, handleValidationErrors(), CreateProvider);
+router.post('/Providers', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN", "WAREHOUSEMAN"), validateCreateProvider, handleValidationErrors(), CreateProvider);
 
 
 /**
@@ -168,7 +168,7 @@ router.post('/Providers', isAuth, isRoleAllowed("ALL_ROLES"), validateCreateProv
  *       400:
  *          description: Invalid request
  */
-router.put('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validateEditProvider, handleValidationErrors(), EditProvider);
+router.put('/providers/:providerId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN", "WAREHOUSEMAN"), validateEditProvider, handleValidationErrors(), EditProvider);
 
 /**
  * 
@@ -193,6 +193,6 @@ router.put('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validat
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.patch('/providers/:providerId', isAuth, isRoleAllowed("ALL_ROLES"), validateSwitchStatusProvider, handleValidationErrors(), SwitchStatusProvider);
+router.patch('/providers/:providerId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN", "WAREHOUSEMAN"), validateSwitchStatusProvider, handleValidationErrors(), SwitchStatusProvider);
 
 export default router;
