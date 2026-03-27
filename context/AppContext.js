@@ -5,6 +5,7 @@ import CompaniesModel from '../models/companiesModel.js';
 import ProductsModel from '../models/productsModel.js';
 import CategoriesModel from '../models/categoriesModel.js';
 import ProvidersModel from '../models/providersModel.js'
+import InventoryMovementsModel from '../models/inventoryMovementsModel.js'
 
 //Initialize Connection
 try{
@@ -14,8 +15,9 @@ try{
     console.error(`Error Unable to connect to the database: ${err}`);
 }
 
-///RELATIONS
+////RELATIONS
 
+///USERS
 //Users-Roles
 UsersModel.belongsTo(RolesModel, { foreignKey: "roleId"});
 RolesModel.hasMany(UsersModel, { foreignKey: "roleId"});
@@ -24,14 +26,23 @@ RolesModel.hasMany(UsersModel, { foreignKey: "roleId"});
 UsersModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(UsersModel, { foreignKey: "companyId"});
 
+
+
+///CATEGORIES
 //Categories-Compaines
 CategoriesModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(CategoriesModel, { foreignKey: "companyId"});
 
+
+
+///PROVIDERS
 //Providers-Compaines
 ProvidersModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(ProvidersModel, { foreignKey: "companyId"});
 
+
+
+///PRODUCTS
 //Products-Companies
 ProductsModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
 CompaniesModel.hasMany(ProductsModel, { foreignKey: "companyId"});
@@ -46,6 +57,24 @@ ProvidersModel.hasMany(ProductsModel, { foreignKey: "providerId"});
 
 
 
+///INVENTORY_MOVEMENTS
+//InventoryMovements-Companies
+InventoryMovementsModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
+CompaniesModel.hasMany(InventoryMovementsModel, { foreignKey: "companyId"});
+
+//InventoryMovements-Users
+InventoryMovementsModel.belongsTo(UsersModel, { foreignKey: "userId"});
+UsersModel.hasMany(InventoryMovementsModel, { foreignKey: "userId"});
+
+//InventoryMovements-Products
+InventoryMovementsModel.belongsTo(ProductsModel, { foreignKey: "productId"});
+ProductsModel.hasMany(InventoryMovementsModel, { foreignKey: "productId"});
+
+//InventoryMovements-Providers
+InventoryMovementsModel.belongsTo(ProvidersModel, { foreignKey: "providerId"});
+ProvidersModel.hasMany(InventoryMovementsModel, { foreignKey: "providerId"});
+
+
 
 export default{
     Sequelize: connection, 
@@ -54,5 +83,6 @@ export default{
     CompaniesModel,
     ProductsModel,
     CategoriesModel,
-    ProvidersModel
+    ProvidersModel,
+    InventoryMovementsModel
 }

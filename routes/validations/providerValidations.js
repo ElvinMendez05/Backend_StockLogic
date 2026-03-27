@@ -101,3 +101,27 @@ export const validateEditProvider = [
         .isURL().withMessage("Invalid website URL format")
         .escape(),
 ];
+
+export const validateRestockProduct = [
+    param("productId")
+        .isUUID()
+        .withMessage("A valid Product ID is required")
+        .escape(),
+    body("productRestockQuantity")
+        .notEmpty()
+        .withMessage("Restock quantity is required")
+        .isInt({ min: 1 })
+        .withMessage("Restock quantity must be an integer greater than 0")
+        .toInt(), 
+    body("productProviderId")
+        .optional()
+        .isUUID()
+        .withMessage("If provided, Provider ID must be a valid UUID")
+        .escape(),
+    body("reference")
+        .optional()
+        .trim()
+        .isLength({ max: 200 })
+        .withMessage("Reference description cannot exceed 200 characters")
+        .escape()
+];
