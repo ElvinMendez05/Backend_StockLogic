@@ -53,8 +53,6 @@ export async function GetById(req, res, next) {
 }
 
 export async function CreateProduct(req, res, next) {
-    const transaction = await context.Sequelize.transaction();
-
     const {
         productName,
         productDescription,
@@ -69,11 +67,15 @@ export async function CreateProduct(req, res, next) {
 
     const productCompanyId = req.user.companyId
     const productImage = req.file;
+    const requesterId = req.user.id
 
     let productImageUrl
 
-    try {
+    let transaction = null
 
+    try {
+        transaction = await context.Sequelize.transaction();
+        
         if (parseInt(productCurrentStock) > parseInt(productMaxStock) ) {
             const error = new Error("Product max stock cant be less than the current stock.");
             error.statusCode = 401;
@@ -151,27 +153,28 @@ export async function CreateProduct(req, res, next) {
             minStock: productMinStock,
             maxStock: productMaxStock,
             categoryId: productCategoryId,
-            companyId: productCompanyId,
             providerId: productProviderId,
+            companyId: productCompanyId,
         }, { transaction })
 
-        /*         await context.InventoryMovementsModel.create({
-                    productId: newProduct.id,
-                    type: 'IN',
-                    quantity: productCurrentStock,
-                    previousStock: 0,
-                    newStock: productCurrentStock,
-                    userId: req.user.id,
-                    reference: 'Initial Stock Upload',
-                    companyId: productCompanyId
-                }, { transaction }); */
+        await context.InventoryMovementsModel.create({
+            productId: newProduct.id,
+            movementType: 'IN',
+            quantity: productCurrentStock,
+            previousStock: 0,
+            newStock: productCurrentStock,
+            userId: requesterId,
+            reference: 'Initial Stock Upload',
+            providerId: productProviderId, 
+            companyId: productCompanyId
+        }, { transaction }); 
 
 
         await transaction.commit();
         res.status(200).json({ message: "Product created successfully.", data: newProduct })
     }
     catch (err) {
-        await transaction.rollback();
+        if(transaction){await transaction.rollback()}
 
         if (!err.statusCode) {
             err.statusCode = 500;

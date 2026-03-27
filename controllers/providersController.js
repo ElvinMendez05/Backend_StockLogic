@@ -268,3 +268,64 @@ export async function SwitchStatusProvider(req, res, next) {
         next(err);
     }
 }
+
+export async function RestockProduct(req, res, next) {
+    const { productId } = req.params
+    const productRestockQuantity = req.body.productRestockQuantity
+
+    const companyId = req.user.companyId
+    const requesterId = req.user.id
+
+    let transaction = null
+
+    try {
+        transaction = await context.Sequelize.transaction();
+
+        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId } });
+
+        if (!product) {
+            const error = new Error("Product not found or does not belong to your company.");
+            error.statusCode = 404;
+            error.data = { productId: productId };
+            throw error;
+        }
+
+        const productNewStockAmount = product.currentStock + productRestockQuantity
+
+        if(productNewStockAmount > product.maxStock ){
+            const error = new Error("Product new stock amount can't be greater than it's max stock.");
+            error.statusCode = 400;
+            error.data = { productId: productId, productCurrentStock: product.currentStock,  productNewStockAmount: productNewStockAmount, productMaxStock: product.maxStock };
+            throw error;
+        }
+        
+        const newInventoryMovement = await context.InventoryMovementsModel.create({
+            productId: product.id,
+            movementType: 'IN',
+            quantity: productRestockQuantity,
+            previousStock: product.currentStock,
+            newStock: productNewStockAmount,
+            userId: requesterId,
+            reference: 'Product Restock',
+            providerId: product.providerId, 
+            companyId: companyId
+        }, { transaction });
+        
+        await context.ProductsModel.update({
+            currentStock: productNewStockAmount,         
+        }, { where: { id: product.id }, transaction })
+
+
+        await transaction.commit();
+        res.status(200).json({ message: "Product restock done successfully.", data: newInventoryMovement })
+
+    }
+    catch (err) {
+        if (transaction){ await transaction.rollback()}
+
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+}
