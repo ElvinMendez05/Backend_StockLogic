@@ -4,13 +4,15 @@ import {
     GetById,
     CreateProvider,
     EditProvider,
-    SwitchStatusProvider
+    SwitchStatusProvider,
+    RestockProduct
 } from '../controllers/providersController.js'
 import {
     validateGetByIdProvider,
     validateCreateProvider,
     validateEditProvider,
     validateSwitchStatusProvider,
+    validateRestockProduct
 } from "./validations/providerValidations.js"
 import { handleValidationErrors } from "../middlewares/handleValidations.js"
 import isAuth from '../middlewares/isAuth.js'
@@ -194,5 +196,47 @@ router.put('/providers/:providerId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN
  *         description: Not authenticated or invalid token
  */
 router.patch('/providers/:providerId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN", "WAREHOUSEMAN"), validateSwitchStatusProvider, handleValidationErrors(), SwitchStatusProvider);
+
+/**
+ * 
+ * @swagger
+ * /api/providers/{productId}:
+ *   post:
+ *     summary: Restock a product by its id
+ *     description: Restock a product current stock by its id
+ *     tags: [Providers]
+ *     security:
+ *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         description: The ID of the product to restock
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *      required: true
+ *      content:
+ *        multipart/form-data :
+ *           schema:
+ *              type: object
+ *              properties:
+ *                  productRestockQuantity:
+ *                      type: integer
+ *                  productProviderId:
+ *                      type: string
+ *                  reference:
+ *                      type: string              
+ *              required:
+ *                  - productRestockQuantity
+ *                  - reference
+ *     responses:
+ *       200:
+ *         description: Product restock done successfully
+ *       401:
+ *         description: Not authenticated or invalid token
+ */
+router.post('/providers/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN", "WAREHOUSEMAN"), validateRestockProduct, handleValidationErrors(), RestockProduct);
+
 
 export default router;
