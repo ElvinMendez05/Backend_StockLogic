@@ -223,8 +223,6 @@ router.patch('/providers/:providerId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADM
  *              properties:
  *                  productRestockQuantity:
  *                      type: integer
- *                  productProviderId:
- *                      type: string
  *                  reference:
  *                      type: string              
  *              required:

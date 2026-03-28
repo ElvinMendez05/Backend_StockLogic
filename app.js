@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Web browser accesible directories
-app.use('/public', express.static(path.join(projectRoot, 'public')));
+app.use('/api', express.static(path.join(projectRoot, 'public')));
 
 //Set up swagger
 setupSwagger(app);
