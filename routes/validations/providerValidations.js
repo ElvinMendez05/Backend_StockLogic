@@ -113,11 +113,6 @@ export const validateRestockProduct = [
         .isInt({ min: 1 })
         .withMessage("Restock quantity must be an integer greater than 0")
         .toInt(), 
-    body("productProviderId")
-        .optional()
-        .isUUID()
-        .withMessage("If provided, Provider ID must be a valid UUID")
-        .escape(),
     body("reference")
         .optional()
         .trim()
