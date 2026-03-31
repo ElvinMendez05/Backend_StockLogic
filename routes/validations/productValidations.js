@@ -119,6 +119,9 @@ export const validateEditProduct = [
         })
 ];
 
-export const validateDeleteProduct = [
-    param("productId").trim().notEmpty().withMessage("Product ID is required").escape(),
+export const validateSwitchStatusProduct = [
+    param("productId")
+        .trim()
+        .notEmpty().withMessage("Product ID is required")
+        .escape(),
 ];
