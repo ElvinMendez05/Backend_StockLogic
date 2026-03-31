@@ -8,7 +8,7 @@ export async function GetAll(req, res, next) {
     const companyId = req.user.companyId
 
     try {
-        const products = await context.ProductsModel.findAll({ where: { companyId: companyId } });
+        const products = await context.ProductsModel.findAll({ where: { companyId: companyId, isActive: true } });
 
         if (products.length === 0) {
             res.status(204).end();
@@ -29,7 +29,7 @@ export async function GetById(req, res, next) {
     const productCompanyId = req.user.companyId
 
     try {
-        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: productCompanyId } });
+        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: productCompanyId, isActive: true } });
 
         if (!product) {
             const error = new Error("Product not found or does not belong to your company.");
@@ -154,6 +154,7 @@ export async function CreateProduct(req, res, next) {
             maxStock: productMaxStock,
             categoryId: productCategoryId,
             providerId: productProviderId,
+            isActive: true,
             companyId: productCompanyId,
         }, { transaction })
 
@@ -204,7 +205,7 @@ export async function EditProduct(req, res, next) {
     let productImageUrl
 
     try {
-        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId } });
+        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId, isActive: true } });
 
         if (!product) {
             const error = new Error("Product not found or does not belong to your company.");
@@ -289,7 +290,7 @@ export async function EditProduct(req, res, next) {
     }
 }
 
-export async function DeleteProduct(req, res, next) {
+export async function SwitchStatusProduct(req, res, next) {
     const { productId } = req.params
     const productCompanyId = req.user.companyId
 
@@ -303,16 +304,21 @@ export async function DeleteProduct(req, res, next) {
             throw error;
         }
 
-        await context.ProductsModel.destroy({ where: { id: productId, companyId: productCompanyId } });
+        if (product.isActive !== false) {
+            await context.ProductsModel.update({
+                isActive: false,
+                deactivatedAt: Date.now()
+            }, { where: { id: productId, companyId: productCompanyId } })
 
-        if (product.imageUrl) {
-            const productImageUrl = path.join(projectRoot, "public", product.imageUrl);
-            if (fs.existsSync(productImageUrl)) {
-                fs.unlinkSync(productImageUrl);
-            }
+            return res.status(200).json({ message: "Product deactivated successfully." });
         }
 
-        res.status(204).json({ message: "Product deleted successfully." })
+        await context.ProductsModel.update({
+            isActive: true,
+            deactivatedAt: null
+        }, { where: { id: productId, companyId: productCompanyId } })
+
+        return res.status(200).json({ message: "Product activated successfully." });
     }
     catch (err) {
         if (!err.statusCode) {

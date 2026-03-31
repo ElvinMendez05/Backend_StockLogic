@@ -20,10 +20,14 @@ export async function GetAll(req, res, next) {
             },
             include: [{
                 model: context.ProductsModel,
+                as: 'Products',
+                where: {
+                    isActive: true
+                },
                 attributes: [],
                 required: false
             }],
-            group: ['Providers.id']
+            group: ['Providers.id'] 
         });
 
         if (providers.length === 0) {
@@ -53,6 +57,10 @@ export async function GetById(req, res, next) {
             include: [{
                 model: context.ProductsModel,
                 as: 'Products',
+                where: {
+                    isActive: true
+                },
+                required: false,
                 attributes: [
                     'id',
                     'name',
@@ -64,6 +72,7 @@ export async function GetById(req, res, next) {
                     'currentStock',
                     'minStock',
                     'maxStock',
+                    'isActive',
                     'categoryId'
                 ]
             }]
@@ -281,7 +290,7 @@ export async function RestockProduct(req, res, next) {
     try {
         transaction = await context.Sequelize.transaction();
 
-        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId } });
+        const product = await context.ProductsModel.findOne({ where: { id: productId, companyId: companyId, isActive: true } });
 
         if (!product) {
             const error = new Error("Product not found or does not belong to your company.");

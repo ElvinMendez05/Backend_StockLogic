@@ -4,13 +4,13 @@ import {
     GetById,
     CreateProduct,
     EditProduct,
-    DeleteProduct
+    SwitchStatusProduct
 } from '../controllers/productsController.js'
 import {
     validateGetByIdProduct,
     validateCreateProduct,
     validateEditProduct,
-    validateDeleteProduct,
+    validateSwitchStatusProduct,
 } from "./validations/productValidations.js"
 import { handleValidationErrors } from "../middlewares/handleValidations.js"
 import isAuth from '../middlewares/isAuth.js'
@@ -189,13 +189,14 @@ router.post('/products', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validate
  */
 router.put('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateEditProduct, handleValidationErrors(), EditProduct);
 
+
 /**
  * 
  * @swagger
  * /api/products/{productId}:
- *   delete:
- *     summary: Delete a product by its id
- *     description: Delete a product data by its id
+ *   patch:
+ *     summary: Switch the status of a product by its id
+ *     description: Switch the status of a product by its id
  *     tags: [Products]
  *     security:
  *      - BearerAuth: [] # Indica que esta ruta requiere el token en el Swagger UI
@@ -203,15 +204,16 @@ router.put('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN")
  *       - in: path
  *         name: productId
  *         required: true
- *         description: The ID of the product to delete
+ *         description: The ID of the product to switch status
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Product deleted successfully
+ *         description: Product status switched successfully
  *       401:
  *         description: Not authenticated or invalid token
  */
-router.delete('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateDeleteProduct, handleValidationErrors(), DeleteProduct);
+router.patch('/products/:productId', isAuth, isRoleAllowed("SUPER_ADMIN", "ADMIN"), validateSwitchStatusProduct, handleValidationErrors(), SwitchStatusProduct);
+
 
 export default router;
