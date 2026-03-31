@@ -45,6 +45,14 @@ const Products = connection.define('Products', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    isActive:{
+        type: DataTypes.BOOLEAN,
+        allowNull: false        
+    },
+    deactivatedAt:{
+        type: DataTypes.DATE,
+        allowNull: true 
+    },
     categoryId: {
         type: DataTypes.UUID,
         allowNull: false,

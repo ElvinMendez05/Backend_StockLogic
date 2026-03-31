@@ -7,14 +7,6 @@ export const validateGetByIdProvider = [
         .escape(),
 ];
 
-export const validateSwitchStatusProvider = [
-    param("providerId")
-        .trim()
-        .notEmpty().withMessage("Provider ID is required")
-        .escape(),
-];
-
-
 export const validateCreateProvider = [
         body("providerName")
         .trim()
@@ -99,6 +91,13 @@ export const validateEditProvider = [
         .trim()
         .notEmpty().withMessage("Website is required")
         .isURL().withMessage("Invalid website URL format")
+        .escape(),
+];
+
+export const validateSwitchStatusProvider = [
+    param("providerId")
+        .trim()
+        .notEmpty().withMessage("Provider ID is required")
         .escape(),
 ];
 
