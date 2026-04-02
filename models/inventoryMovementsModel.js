@@ -28,6 +28,15 @@ const InventoryMovements = connection.define('InventoryMovements', {
         type: DataTypes.TEXT,
         allowNull: false
     },
+    saleId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        References: {
+            model: "Sales",
+            key: "id"
+        },
+        onUpdate: "CASCADE"
+    },
     providerId: {
         type: DataTypes.UUID,
         allowNull: true,
