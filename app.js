@@ -16,6 +16,7 @@ import productsRoutes from "./routes/products.routes.js"
 import providersRoutes from "./routes/providers.routes.js"
 import usersRoutes from './routes/users.routes.js'
 import rolesRoutes from'./routes/roles.routes.js'
+import salesRoutes from './routes/sales.routes.js'
 
 const app = express();
 
@@ -64,8 +65,9 @@ app.use(cors({
 //Routes
 app.use("/api", authRoutes);
 app.use("/api", categoriesRoutes);
-app.use("/api", productsRoutes);
 app.use("/api", providersRoutes);
+app.use("/api", productsRoutes);
+app.use("/api", salesRoutes);
 app.use("/api", usersRoutes);
 app.use("/api", rolesRoutes);
 
