@@ -6,6 +6,7 @@ import ProductsModel from '../models/productsModel.js';
 import CategoriesModel from '../models/categoriesModel.js';
 import ProvidersModel from '../models/providersModel.js'
 import InventoryMovementsModel from '../models/inventoryMovementsModel.js'
+import SalesModel from '../models/salesModel.js'
 
 //Initialize Connection
 try{
@@ -57,6 +58,17 @@ ProvidersModel.hasMany(ProductsModel, { foreignKey: "providerId"});
 
 
 
+///Sales
+//Sales-Companies
+SalesModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
+CompaniesModel.hasMany(SalesModel, { foreignKey: "companyId"});
+
+//Sales-products
+SalesModel.belongsTo(ProductsModel, { foreignKey: "productId"});
+ProductsModel.hasMany(SalesModel, { foreignKey: "productId"});
+
+
+
 ///INVENTORY_MOVEMENTS
 //InventoryMovements-Companies
 InventoryMovementsModel.belongsTo(CompaniesModel, { foreignKey: "companyId"});
@@ -74,6 +86,9 @@ ProductsModel.hasMany(InventoryMovementsModel, { foreignKey: "productId"});
 InventoryMovementsModel.belongsTo(ProvidersModel, { foreignKey: "providerId"});
 ProvidersModel.hasMany(InventoryMovementsModel, { foreignKey: "providerId"});
 
+//InventoryMovements-Providers
+InventoryMovementsModel.belongsTo(SalesModel, { foreignKey: "saleId"});
+SalesModel.hasMany(InventoryMovementsModel, { foreignKey: "saleId"});
 
 
 export default{
@@ -84,5 +99,6 @@ export default{
     ProductsModel,
     CategoriesModel,
     ProvidersModel,
-    InventoryMovementsModel
+    InventoryMovementsModel,
+    SalesModel
 }
