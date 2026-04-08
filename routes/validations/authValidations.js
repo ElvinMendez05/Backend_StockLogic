@@ -36,7 +36,7 @@ export const validateRegisterCompany = [
 ];
 
 export const validateActivateUser = [
-    body("token").trim().notEmpty().withMessage("Token is required").escape(),
+    param("token").trim().notEmpty().withMessage("Token is required").escape(),
 ];
 
 export const validateForgotPassword = [
@@ -45,6 +45,12 @@ export const validateForgotPassword = [
 
 
 export const validateResetPassword = [
+    param("userPasswordToken")
+    .trim()
+    .notEmpty()
+    .withMessage("Password token is required")
+    .escape(),
+
     body("userPassword")
         .trim()
         .notEmpty()
@@ -65,11 +71,5 @@ export const validateResetPassword = [
     body("userPasswordConfirm")
         .trim()
         .notEmpty()
-        .withMessage("Confirm password is required"),
-
-    body("userPasswordToken")
-        .trim()
-        .notEmpty()
-        .withMessage("Password token is required")
-        .escape(),
+        .withMessage("Confirm password is required")
 ];
