@@ -164,6 +164,7 @@ export async function CreateProduct(req, res, next) {
             quantity: productCurrentStock,
             previousStock: 0,
             newStock: productCurrentStock,
+            costPriceAtMovement: productCostPrice,
             userId: requesterId,
             reference: 'Initial Stock Upload',
             providerId: productProviderId, 

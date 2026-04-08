@@ -313,6 +313,7 @@ export async function RestockProduct(req, res, next) {
             movementType: 'IN',
             quantity: productRestockQuantity,
             previousStock: product.currentStock,
+            costPriceAtMovement: product.costPrice,
             newStock: productNewStockAmount,
             userId: requesterId,
             reference: 'Product Restock',

@@ -2,7 +2,7 @@ import context from '../context/AppContext.js';
 import path from 'path'
 import fs from 'fs'
 const { Sequelize } = context
-import { Op, fn, col } from 'sequelize';
+import { Op, fn, col, literal } from 'sequelize';
 
 export async function GetAll(req, res, next) {
     const companyId = req.user.companyId
@@ -12,20 +12,15 @@ export async function GetAll(req, res, next) {
     startOfMonth.setDate(1);
 
     try {
-        const [sales, stats, monthlySales] = await Promise.all([
+        const [sales, salesStats, monthlySalesCount, investmentStats, purchasesList] = await Promise.all([
             context.SalesModel.findAll({
-                where: { companyId: companyId },
+                where: { companyId },
                 order: [['createdAt', 'DESC']],
-                include: [{
-                    model: context.ProductsModel,
-                    as: 'Product',
-                    attributes: ['name'],
-                    required: false
-                }]
+                include: [{ model: context.ProductsModel, as: 'Product', attributes: ['name'], required: false }]
             }),
 
             context.SalesModel.findOne({
-                where: { companyId: companyId, isCompleted: true },
+                where: { companyId, isCompleted: true },
                 attributes: [
                     [fn('COUNT', col('id')), 'totalCompletedSales'],
                     [fn('SUM', col('totalPrice')), 'totalRevenue']
@@ -34,27 +29,61 @@ export async function GetAll(req, res, next) {
             }),
 
             context.SalesModel.count({
-                where: {
-                    companyId: companyId,
-                    createdAt: { [Op.gte]: startOfMonth }
-                }
+                where: { companyId, createdAt: { [Op.gte]: startOfMonth } }
+            }),
+
+            context.InventoryMovementsModel.findOne({
+                where: { 
+                    companyId, 
+                    movementType: 'IN' 
+                },
+                attributes: [
+                    [
+                        fn('SUM', literal('quantity * costPriceAtMovement')), 
+                        'totalInvestment'
+                    ]
+                ],
+                raw: true
+            }),
+
+            context.InventoryMovementsModel.findAll({
+                where: { companyId, movementType: 'IN' },
+                order: [['createdAt', 'DESC']],
+                include: [{
+                    model: context.ProductsModel,
+                    as: 'Product',
+                    attributes: ['name']
+                }],
+                attributes: [
+                    'id', 'quantity', 'createdAt', 'costPriceAtMovement',
+                    [literal('quantity * costPriceAtMovement'), 'totalCost']
+                ]
             })
         ]);
 
-        if (sales.length === 0) {
-            res.status(204).end();
+        const revenue = parseFloat(salesStats.totalRevenue) || 0;
+        const investment = parseFloat(investmentStats.totalInvestment) || 0;
+        const netProfit = revenue - investment;
+
+        if (sales.length === 0 && purchasesList.length === 0) {
+            return res.status(204).end();
         }
-        
+
         res.status(200).json({ 
-            message: "Sales retrieved successfully.", 
+            message: "Financial data retrieved successfully.", 
             data: {
                 sales: sales,
+                purchases: purchasesList, 
                 stats: {
-                    totalCompleted: parseInt(stats.totalCompletedSales) || 0,
-                    totalRevenue: parseFloat(stats.totalRevenue) || 0,
-                    currentMonthSalesCount: monthlySales
+                    totalCompletedSales: parseInt(salesStats.totalCompletedSales) || 0,
+                    totalRevenue: revenue,
+                    totalInvestment: investment,
+                    netProfit: netProfit,
+                    currentMonthSalesCount: monthlySalesCount,
+                    status: netProfit >= 0 ? 'PROFIT' : 'LOSS'
                 }
-            }})
+            }
+        });
     }
     catch (err) {
         if (!err.statusCode) {
@@ -198,6 +227,7 @@ export async function CreateSale(req, res, next) {
             movementType: 'OUT',
             quantity: quantity,
             previousStock: product.currentStock,
+            costPriceAtMovement: product.costPrice,
             newStock: productRemainingStock,
             userId: requesterId,
             reference: `Sale ${saleCode}`,
