@@ -16,6 +16,10 @@ const InventoryMovements = connection.define('InventoryMovements', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    costPriceAtMovement: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+    },
     previousStock: {
         type: DataTypes.INTEGER,
         allowNull: false

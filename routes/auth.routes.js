@@ -128,11 +128,18 @@ router.post('/auth/forgot-password', validateForgotPassword, handleValidationErr
 /**
  * 
  * @swagger
- * /api/auth/reset-password:
+ * /api/auth/reset-password/{userPasswordToken}:
  *   post:
  *     summary: Reset Password
  *     description: Reset the users password
  *     tags: [Login/Register]
+ *     parameters:
+ *       - in: path
+ *         name: userPasswordToken
+ *         required: true
+ *         description: The token to reset the password of the refeered user
+ *         schema:
+ *           type: string
  *     requestBody:
  *      required: true
  *      content:
@@ -144,46 +151,39 @@ router.post('/auth/forgot-password', validateForgotPassword, handleValidationErr
  *                      type: string
  *                  userPasswordConfirm:
  *                      type: string
- *                  userPasswordToken:
- *                      type: string
  *              required:
  *                  - userPassword
  *                  - userPasswordConfirm
- *                  - userPasswordToken
  *     responses:
  *       200:
  *          description: Company registered successfully
  *       400:
  *          description: Invalid request
  */
-router.post('/auth/reset-password', validateResetPassword, handleValidationErrors(), ResetPassword);
+router.post('/auth/reset-password/:userPasswordToken', validateResetPassword, handleValidationErrors(), ResetPassword);
 
 /**
  * 
  * @swagger
- * /api/auth/activate-user:
+ * /api/auth/activate-user/{token}:
  *   post:
  *     summary: Activate user
  *     description: Activate a user account
  *     tags: [Login/Register]
- *     requestBody:
- *      required: true
- *      content:
- *        application/json:
- *           schema:
- *              type: object
- *              properties:
- *                  token:
- *                      type: string
- *              required:
- *                  - token
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         description: The token to activate it's refeered user
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *          description: User activated successfully
  *       400:
  *          description: Invalid request
  */
-router.post("/auth/activate-user", validateActivateUser, handleValidationErrors(), ActivateUser);
+router.post("/auth/activate-user/:token", validateActivateUser, handleValidationErrors(), ActivateUser);
 
 /**
  * 

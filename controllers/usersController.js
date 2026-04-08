@@ -224,6 +224,48 @@ export async function RegisterUser(req, res, next) {
                 <p>Si usted no ha sido notificado de esta acción, porfavor ignore este correo.</p>`
         });
 
+        await sendEmail({
+            to: companyEmail,
+            subject: "Bienvenido a StockLogic - Activa tu cuenta",
+            html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #5D5FEF; padding: 30px; text-align: left;">
+                    <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">StockLogic</h1>
+                    <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 14px;">Activación de cuenta</p>
+                </div>
+        
+                <div style="padding: 40px; background-color: #ffffff;">
+                    <h2 style="color: #333; margin-bottom: 20px;">Hola, ${userName}</h2>
+                    <p style="color: #555; line-height: 1.6; font-size: 16px;">
+                        Usted ha sido registrado por un administrador en nuestra plataforma. Para completar el proceso y activar su cuenta, utilice el siguiente token de seguridad:
+                    </p>
+                    
+                <div style="background-color: #f4f4f9; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0; border: 1px dashed #5D5FEF;">
+                    <span style="font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #5D5FEF; word-break: break-all; overflow-wrap: anywhere; display: block; line-height: 1.4;">
+                        ${token}
+                    </span>
+                </div>
+        
+                    <div style="border-left: 4px solid #5D5FEF; padding-left: 15px; margin-bottom: 30px;">
+                        <p style="color: #333; font-weight: 600; margin: 0;">Información importante:</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Este código es válido únicamente por <strong>1 hora</strong>.</p>
+                    </div>
+        
+                    <p style="color: #999; font-size: 13px; font-style: italic;">
+                        Si usted no ha sido avisado de este registro, puedes ignorar este correo de forma segura.
+                    </p>
+                </div>
+        
+                <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+                    <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase;">
+                        Estado: Registro en proceso
+                    </div>
+                    <p style="color: #bbb; font-size: 12px; margin-top: 15px;">&copy; 2026 StockLogic System</p>
+                </div>
+            </div>
+            `
+        });
+
         res.status(201).json({ message: "User registered successfully. Please, notify him to check his email to activate his account.", data: { newUser: newUser } })
 
 
