@@ -36,15 +36,15 @@ export async function Login(req, res, next) {
 
 
         if (!user.isActive) {
-            if (user.activateTokenExpiration && user.activateTokenExpiration <= Date.now() ) {
+            if (user.activateTokenExpiration && user.activateTokenExpiration <= Date.now()) {
 
                 const transaction = await Sequelize.transaction();
                 const masterRoleResult = await context.RolesModel.findOne({ where: { code: "SUPER_ADMIN" } }, transaction);
 
-                if(!masterRoleResult){
+                if (!masterRoleResult) {
                     const error = new Error("No main admin role found to proceed.");
                     error.statusCode = 401;
-                    error.data = { email: userEmail };                   
+                    error.data = { email: userEmail };
                 }
 
                 await context.UsersModel.destroy({ where: { email: user.email } }, transaction);
@@ -74,10 +74,10 @@ export async function Login(req, res, next) {
         }
 
         const roleResult = await context.RolesModel.findOne({ where: { id: user.roleId } });
-        if(!roleResult){
+        if (!roleResult) {
             const error = new Error("No role found to proceed.");
             error.statusCode = 401;
-            error.data = { email: userEmail };                   
+            error.data = { email: userEmail };
         }
 
         const token = signJwt({
@@ -87,7 +87,7 @@ export async function Login(req, res, next) {
             companyId: user.companyId,
             roleCode: roleResult.code
         });
-        
+
         res.status(200).json({
             message: "Login successful",
             token,
@@ -173,11 +173,44 @@ export async function RegisterCompany(req, res, next) {
 
         await sendEmail({
             to: companyEmail,
-            subject: "Bienvenido a StockLogic.",
-            html: `<h2>Querido ${userName}</h2>
-                <p>Gracias por registrarse. Porfavor, use el siguiente token para activar su cuenta:</p>
-                <p>${token}</p>
-                <p>Si usted no se ha registrado, porfavor ignore este correo.</p>`
+            subject: "Bienvenido a StockLogic - Activa tu cuenta",
+            html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #5D5FEF; padding: 30px; text-align: left;">
+                    <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">StockLogic</h1>
+                    <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 14px;">Activación de cuenta</p>
+                </div>
+        
+                <div style="padding: 40px; background-color: #ffffff;">
+                    <h2 style="color: #333; margin-bottom: 20px;">Hola, ${userName}</h2>
+                    <p style="color: #555; line-height: 1.6; font-size: 16px;">
+                        Gracias por registrarte en nuestra plataforma. Para completar el proceso y activar tu cuenta, utiliza el siguiente token de seguridad:
+                    </p>
+                    
+                <div style="background-color: #f4f4f9; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0; border: 1px dashed #5D5FEF;">
+                    <span style="font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #5D5FEF; word-break: break-all; overflow-wrap: anywhere; display: block; line-height: 1.4;">
+                        ${token}
+                    </span>
+                </div>
+        
+                    <div style="border-left: 4px solid #5D5FEF; padding-left: 15px; margin-bottom: 30px;">
+                        <p style="color: #333; font-weight: 600; margin: 0;">Información importante:</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Este código es válido únicamente por <strong>1 hora</strong>.</p>
+                    </div>
+        
+                    <p style="color: #999; font-size: 13px; font-style: italic;">
+                        Si no has solicitado este registro, puedes ignorar este correo de forma segura.
+                    </p>
+                </div>
+        
+                <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+                    <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase;">
+                        Estado: Registro en proceso
+                    </div>
+                    <p style="color: #bbb; font-size: 12px; margin-top: 15px;">&copy; 2026 StockLogic System</p>
+                </div>
+            </div>
+            `
         });
 
         res.status(201).json({ message: "User registered successfully. Please check your email to activate your account.", data: { newUser: newUser, newCompany: newCompany } })
@@ -195,7 +228,7 @@ export async function RegisterCompany(req, res, next) {
 }
 
 export async function ActivateUser(req, res, next) {
-    const { token } = req.body;
+    const { token } = req.params;
 
     if (!token) {
         const error = new Error("Invalid activation token.");
@@ -286,13 +319,47 @@ export async function ForgotPassword(req, res, next) {
             throw error;
         }
 
+
         await sendEmail({
             to: userEmail,
-            subject: "Stock Logic - Solicitud de Reinicio de Contraseña.",
-            html: `<h2>Querido ${user.name}</h2>
-                <p>Has solicitado un reinicio de contraseña. Porfavor usa este token para resetear tu contraseña:</p>
-                <p>${token}</p>
-                <p>Si usted no ha hecho ninguna solicitud, porfavor ignore este mensaje.</p>`
+            subject: "StockLogic - Restablecer tu contraseña",
+            html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #5D5FEF; padding: 30px; text-align: left;">
+                    <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">StockLogic</h1>
+                    <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 14px;">Seguridad de la cuenta</p>
+                </div>
+        
+                <div style="padding: 40px; background-color: #ffffff;">
+                    <h2 style="color: #333; margin-bottom: 20px;">Hola, ${user.name}</h2>
+                    <p style="color: #555; line-height: 1.6; font-size: 16px;">
+                        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si fuiste tú, utiliza el siguiente código para continuar con el proceso:
+                    </p>
+                    
+                    <div style="background-color: #f4f4f9; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0; border: 1px dashed #5D5FEF;">
+                        <span style="font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: bold; color: #5D5FEF; word-break: break-all; overflow-wrap: anywhere; display: block; line-height: 1.5; letter-spacing: 1px;">
+                            ${token}
+                        </span>
+                    </div>
+        
+                    <div style="border-left: 4px solid #E74C3C; padding-left: 15px; margin-bottom: 30px;">
+                        <p style="color: #333; font-weight: 600; margin: 0;">Enlace temporal:</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Por motivos de seguridad, este token expirará en <strong>1 hora</strong>.</p>
+                    </div>
+        
+                    <p style="color: #999; font-size: 13px; font-style: italic;">
+                        Si no has solicitado este cambio, por favor ignora este mensaje. Tu contraseña actual seguirá siendo segura.
+                    </p>
+                </div>
+        
+                <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+                    <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase;">
+                        Protección de cuenta activada
+                    </div>
+                    <p style="color: #bbb; font-size: 11px; margin-top: 15px;">&copy; 2026 StockLogic System</p>
+                </div>
+            </div>
+            `
         });
 
 
@@ -307,7 +374,8 @@ export async function ForgotPassword(req, res, next) {
 }
 
 export async function ResetPassword(req, res, next) {
-    const { userPasswordToken, userPassword, userPasswordConfirm } = req.body;
+    const { userPasswordToken } = req.params
+    const { userPassword, userPasswordConfirm } = req.body;
 
     if (userPassword !== userPasswordConfirm) {
         const error = new Error("Password do not match.");
@@ -341,7 +409,40 @@ export async function ResetPassword(req, res, next) {
             throw error;
         }
 
+        await sendEmail({
+            to: user.email,
+            subject: "StockLogic - Contraseña actualizada con éxito",
+            html: `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
+                <div style="background-color: #27AE60; padding: 30px; text-align: left;">
+                    <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">StockLogic</h1>
+                    <p style="color: #e0f2f1; margin: 5px 0 0 0; font-size: 14px;">Actualización de seguridad</p>
+                </div>
+        
+                <div style="padding: 40px; background-color: #ffffff;">
+                    <h2 style="color: #333; margin-bottom: 20px;">Hola, ${user.name}</h2>
+        
+                    <p style="color: #555; line-height: 1.6; font-size: 16px; text-align: center;">
+                        Tu contraseña ha sido restablecida correctamente. Ya puedes acceder a tu panel de control con tus nuevas credenciales.
+                    </p>
+        
+                    <div style="background-color: #f8f9fa; border-left: 4px solid #5D5FEF; padding: 15px; margin: 30px 0;">
+                        <p style="color: #333; font-weight: 600; margin: 0; font-size: 14px;">¿No fuiste tú?</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 13px;">
+                            Si no realizaste este cambio, ponte en contacto con nuestro equipo de soporte de inmediato para proteger tu cuenta.
+                        </p>
+                    </div>
+                </div>
+        
+                <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
+                    <p style="color: #bbb; font-size: 11px; margin: 0;">&copy; 2026 StockLogic System - Gestión Inteligente</p>
+                </div>
+            </div>
+            `
+        });
+
         res.status(200).json({ message: "Password reset successfully. You can now log in." })
+
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
