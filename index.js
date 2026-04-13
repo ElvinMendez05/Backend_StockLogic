@@ -13,7 +13,7 @@ try{
       console.log(`Test the app API at: ${process.env.APP_URL}/SWAGGER/#/`)
   });
 
-  console.log("DB Connection Successful.");
+  console.log("DB Connection Successfull.");
 
 }catch(err){
   const error = new Error('Database failed to connect:');
