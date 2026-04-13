@@ -171,6 +171,8 @@ export async function RegisterCompany(req, res, next) {
 
         await transaction.commit();
 
+        const activationUrl = `${process.env.UI_ACTIVATE_USER_URL}${token}`;
+
         await sendEmail({
             to: companyEmail,
             subject: "Bienvenido a StockLogic - Activa tu cuenta",
@@ -184,27 +186,29 @@ export async function RegisterCompany(req, res, next) {
                 <div style="padding: 40px; background-color: #ffffff;">
                     <h2 style="color: #333; margin-bottom: 20px;">Hola, ${userName}</h2>
                     <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                        Gracias por registrarte en nuestra plataforma. Para completar el proceso y activar tu cuenta, utiliza el siguiente token de seguridad:
+                        Gracias por registrarse en nuestra plataforma. Para completar el proceso y comenzar a gestionar el inventario, por favor active su cuenta haciendo clic en el siguiente botón:
                     </p>
                     
-                <div style="background-color: #f4f4f9; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0; border: 1px dashed #5D5FEF;">
-                    <span style="font-family: 'Courier New', Courier, monospace; font-size: 18px; font-weight: bold; color: #5D5FEF; word-break: break-all; overflow-wrap: anywhere; display: block; line-height: 1.4;">
-                        ${token}
-                    </span>
-                </div>
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${activationUrl}" 
+                           style="background-color: #5D5FEF; color: white; padding: 15px 35px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(93, 95, 239, 0.2);">
+                            Activar mi cuenta ahora
+                        </a>
+                    </div>
         
                     <div style="border-left: 4px solid #5D5FEF; padding-left: 15px; margin-bottom: 30px;">
                         <p style="color: #333; font-weight: 600; margin: 0;">Información importante:</p>
-                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Este código es válido únicamente por <strong>1 hora</strong>.</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Este enlace de activación es válido únicamente por <strong>1 hora</strong>.</p>
                     </div>
         
                     <p style="color: #999; font-size: 13px; font-style: italic;">
-                        Si no has solicitado este registro, puedes ignorar este correo de forma segura.
+                        Si el botón no funciona, puede copiar y pegar el siguiente enlace en su navegador: <br>
+                        <span style="word-break: break-all; color: #5D5FEF;">${activationUrl}</span>
                     </p>
                 </div>
         
                 <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
-                    <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 14px; text-transform: uppercase;">
+                    <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase;">
                         Estado: Registro en proceso
                     </div>
                     <p style="color: #bbb; font-size: 12px; margin-top: 15px;">&copy; 2026 StockLogic System</p>
@@ -319,6 +323,7 @@ export async function ForgotPassword(req, res, next) {
             throw error;
         }
 
+        const resetUrl = `${process.env.UI_RESET_PASSWORD_URL}${token}`;
 
         await sendEmail({
             to: userEmail,
@@ -329,29 +334,31 @@ export async function ForgotPassword(req, res, next) {
                     <h1 style="color: white; margin: 0; font-size: 24px; letter-spacing: 1px;">StockLogic</h1>
                     <p style="color: #e0e0e0; margin: 5px 0 0 0; font-size: 14px;">Seguridad de la cuenta</p>
                 </div>
-        
+
                 <div style="padding: 40px; background-color: #ffffff;">
                     <h2 style="color: #333; margin-bottom: 20px;">Hola, ${user.name}</h2>
                     <p style="color: #555; line-height: 1.6; font-size: 16px;">
-                        Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si fuiste tú, utiliza el siguiente código para continuar con el proceso:
+                        Hemos recibido una solicitud para restablecer la contraseña de su cuenta. Si fuiste tú, haga clic en el siguiente botón para elegir una nueva contraseña:
                     </p>
                     
-                    <div style="background-color: #f4f4f9; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0; border: 1px dashed #5D5FEF;">
-                        <span style="font-family: 'Courier New', Courier, monospace; font-size: 16px; font-weight: bold; color: #5D5FEF; word-break: break-all; overflow-wrap: anywhere; display: block; line-height: 1.5; letter-spacing: 1px;">
-                            ${token}
-                        </span>
+                    <div style="text-align: center; margin: 35px 0;">
+                        <a href="${resetUrl}" 
+                        style="background-color: #5D5FEF; color: white; padding: 15px 35px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(93, 95, 239, 0.2);">
+                            Restablecer mi contraseña
+                        </a>
                     </div>
-        
+
                     <div style="border-left: 4px solid #E74C3C; padding-left: 15px; margin-bottom: 30px;">
                         <p style="color: #333; font-weight: 600; margin: 0;">Enlace temporal:</p>
-                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Por motivos de seguridad, este token expirará en <strong>1 hora</strong>.</p>
+                        <p style="color: #777; margin: 5px 0 0 0; font-size: 14px;">Por motivos de seguridad, este enlace expirará en <strong>1 hora</strong>.</p>
                     </div>
-        
+
                     <p style="color: #999; font-size: 13px; font-style: italic;">
-                        Si no has solicitado este cambio, por favor ignora este mensaje. Tu contraseña actual seguirá siendo segura.
+                        Si usted no ha solicitado este cambio, puede ignorar este correo. Si el botón no funciona, copie y pegue este enlace en su navegador: <br>
+                        <span style="word-break: break-all; color: #5D5FEF;">${resetUrl}</span>
                     </p>
                 </div>
-        
+
                 <div style="background-color: #f9f9f9; padding: 20px; text-align: center; border-top: 1px solid #eeeeee;">
                     <div style="display: inline-block; padding: 10px 25px; background-color: #27AE60; color: white; border-radius: 5px; font-weight: bold; font-size: 12px; text-transform: uppercase;">
                         Protección de cuenta activada
