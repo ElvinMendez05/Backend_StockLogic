@@ -112,8 +112,8 @@ export const validateEditProduct = [
         .escape(), 
     body("productImage")
         .custom((value, { req }) => {
-            if (!req.file) {
-                throw new Error("Product image file is required");
+            if (req.file) {
+                return true;
             }
             return true;
         })
