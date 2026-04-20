@@ -17,6 +17,10 @@ dist-ssr
 # Database
 database/stocklogic.sqlite
 
+#Images
+public/uploads/images/products/*
+!public/uploads/images/products/.gitkeep
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
