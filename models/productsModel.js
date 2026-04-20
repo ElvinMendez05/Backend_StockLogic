@@ -14,8 +14,7 @@ const Products = connection.define('Products', {
     },
     sku: {
         type: DataTypes.STRING,
-        allowNull: true,
-        unique: true 
+        allowNull: true
     },
     description: {
         type: DataTypes.TEXT,
