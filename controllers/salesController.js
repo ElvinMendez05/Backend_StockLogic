@@ -177,8 +177,8 @@ export async function CreateSale(req, res, next) {
 
         const productRemainingStock = product.currentStock - quantity
 
-        if(productRemainingStock < product.minStock){
-            const error = new Error("Insufficient stock. It cannot go below minimum.");
+        if(productRemainingStock < 0){
+            const error = new Error("Insufficient stock. It cannot go below 0.");
             error.statusCode = 400;
             error.data = { productId: productId, productCurrentStock: product.currentStock,  productRemainingStock: productRemainingStock, productMinStock: product.minStock };
             throw error; 

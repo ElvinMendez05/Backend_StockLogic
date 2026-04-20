@@ -14,8 +14,7 @@ const Sales = connection.define('Sales', {
     },
     code: {
         type: DataTypes.STRING,
-        allowNull: true,
-        unique: true 
+        allowNull: true
     },
     quantity: {
         type: DataTypes.INTEGER,
